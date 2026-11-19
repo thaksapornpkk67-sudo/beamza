@@ -3,23 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>พัฒนาสื่อการ์ตูนร่วมกับเกมคำถาม เรื่อง พระอภัยมณี</title>
-    
-    <!-- Tailwind CSS CDN -->
+    <title>เสียงปี่แห่งสมุทร • โลกการ์ตูนและเกมพระอภัยมณี</title>
+
+    <!-- Tailwind CSS CDN สำหรับจัดเลย์เอาต์และสไตล์แบบ Responsive -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Google Fonts: Prompt & Sarabun สำหรับภาษาไทยที่อ่านง่ายและสวยงาม -->
+
+    <!-- Google Fonts: Prompt และ Sarabun สำหรับภาษาไทย -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@400;500;600&display=swap" rel="stylesheet">
-    
-    <!-- Tone.js สำหรับสร้างเสียงเอฟเฟกต์ในเกมคำถาม (ไม่ต้องใช้ไฟล์เสียงภายนอก) -->
+
+    <!-- Tone.js สำหรับสร้างเสียงเอฟเฟกต์ในเกมคำถามแบบไม่ต้องพึ่งไฟล์เสียงภายนอก -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
 
-    <!-- Font Awesome สำหรับไอคอนตกแต่ง -->
+    <!-- Font Awesome สำหรับไอคอน -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <script>
+        // กำหนดฟอนต์และชุดสีหลักของเว็บไซต์
         tailwind.config = {
             theme: {
                 extend: {
@@ -29,13 +30,13 @@
                     },
                     colors: {
                         thai: {
-                            navy: '#0F172A',      // กรมท่าเข้ม
-                            ocean: '#0369A1',     // น้ำเงินสมุทร
-                            aqua: '#0EA5E9',      // ฟ้าทะเล
-                            gold: '#D97706',      // ทองคำไทย
-                            goldLight: '#FBBF24', // ทองสว่าง
-                            cream: '#FFFBEB',     // ครีมอบอุ่น
-                            sand: '#FEF3C7',      // ทรายทองอ่อน
+                            navy: '#0F172A',
+                            ocean: '#0369A1',
+                            aqua: '#0EA5E9',
+                            gold: '#D97706',
+                            goldLight: '#FBBF24',
+                            cream: '#FFFBEB',
+                            sand: '#FEF3C7',
                         }
                     }
                 }
@@ -52,19 +53,19 @@
             background-position: 0 0, 17px 17px;
         }
 
-        /* กรอบลายไทยประยุกต์ */
+        /* การ์ดเนื้อหาแบบมีมิติและเงา */
         .thai-card {
             background: rgba(255, 255, 255, 0.96);
             border: 2px solid #FDE68A;
             box-shadow: 0 10px 25px -5px rgba(217, 119, 6, 0.1), 0 8px 10px -6px rgba(15, 23, 42, 0.05);
             transition: transform 0.25s ease, box-shadow 0.25s ease;
         }
-        
+
         .thai-card:hover {
             box-shadow: 0 20px 30px -10px rgba(217, 119, 6, 0.18);
         }
 
-        /* กล่องคำพูดสไตล์การ์ตูน (Speech Bubble) */
+        /* กล่องคำพูดตัวละครในการ์ตูน */
         .speech-bubble {
             position: relative;
             background: #ffffff;
@@ -99,7 +100,7 @@
             z-index: 1;
         }
 
-        /* แอนิเมชันการสลับหน้า */
+        /* การแสดงผลและการเปลี่ยนแท็บ */
         .tab-content {
             display: none;
             animation: fadeIn 0.35s ease-out;
@@ -114,11 +115,12 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* เอฟเฟกต์คลื่นน้ำในฉากการ์ตูน */
+        /* เอฟเฟกต์ลอยตัวนุ่มนวล */
         @keyframes floatSlow {
             0%, 100% { transform: translateY(0px); }
             50% { transform: translateY(-6px); }
         }
+
         .animate-float {
             animation: floatSlow 3.5s ease-in-out infinite;
         }
@@ -127,11 +129,13 @@
         .quiz-option {
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
         .quiz-option:not(:disabled):hover {
             transform: translateX(6px);
             border-color: #D97706;
             background-color: #FEF3C7;
         }
+
         .quiz-option:disabled {
             cursor: default;
         }
@@ -143,7 +147,7 @@
     <header class="sticky top-0 z-50 bg-gradient-to-r from-slate-900 via-sky-950 to-slate-900 text-white shadow-lg border-b-4 border-amber-500">
         <div class="max-w-6xl mx-auto px-4 py-3">
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-                <!-- โลโก้และชื่อโครงงาน -->
+                <!-- โลโก้และชื่อหัวข้อ -->
                 <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('home')">
                     <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-slate-900 shadow-md shrink-0 border-2 border-amber-200">
                         <i class="fa-solid fa-music text-xl"></i>
@@ -151,12 +155,12 @@
                     <div>
                         <span class="text-xs font-medium text-amber-300 tracking-wider uppercase block">สื่อการเรียนรู้วรรณคดีไทยดิจิทัล</span>
                         <h1 class="text-base sm:text-lg font-bold leading-tight text-white">
-                            การ์ตูนและเกมคำถาม <span class="text-amber-400">เรื่อง พระอภัยมณี</span>
+                            เสียงปี่แห่งสมุทร <span class="text-amber-400">• พระอภัยมณี</span>
                         </h1>
                     </div>
                 </div>
 
-                <!-- เมนูนำทาง (Navigation Tabs) รองรับทั้งมือถือและคอมพิวเตอร์ -->
+                <!-- เมนูนำทางหลัก -->
                 <nav class="grid grid-cols-4 md:flex gap-1.5 sm:gap-2 bg-slate-800/80 p-1.5 rounded-2xl border border-slate-700">
                     <button onclick="switchTab('home')" id="nav-home" class="nav-btn active flex flex-col sm:flex-row items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all bg-amber-500 text-slate-950 shadow">
                         <i class="fa-solid fa-house"></i>
@@ -174,44 +178,42 @@
                         <i class="fa-solid fa-gamepad"></i>
                         <span>เกมคำถาม</span>
                     </button>
+                    <button onclick="switchTab('about')" id="nav-about" class="nav-btn col-span-4 md:col-span-1 flex flex-row items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-700/70 transition-all">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <span>เกี่ยวกับเรา</span>
+                    </button>
                 </nav>
             </div>
         </div>
     </header>
 
-    <!-- ================= MAIN CONTENT CONTAINER ================= -->
+    <!-- ================= MAIN CONTENT ================= -->
     <main class="flex-grow max-w-6xl w-full mx-auto px-4 py-6 sm:py-8">
 
-        <!-- =========================================================
-             1. หน้าแรก (HOME & PROJECT INFO)
-             ========================================================= -->
+        <!-- 1. หน้าแรก -->
         <section id="tab-home" class="tab-content active space-y-8">
-            
-            <!-- Hero Banner -->
             <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-sky-900 via-slate-900 to-indigo-950 text-white p-6 sm:p-10 shadow-xl border-2 border-amber-400/50">
-                <!-- ลวดลายตกแต่งพื้นหลัง -->
                 <div class="absolute -right-16 -top-16 w-64 h-64 bg-amber-500/10 rounded-full blur-2xl pointer-events-none"></div>
                 <div class="absolute -left-16 -bottom-16 w-64 h-64 bg-sky-400/10 rounded-full blur-2xl pointer-events-none"></div>
 
                 <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
                     <div class="lg:col-span-7 space-y-5">
                         <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-xs sm:text-sm font-medium">
-                            <i class="fa-solid fa-award"></i>
-                            <span>โครงงานพัฒนาสื่อการเรียนรู้ • ปีการศึกษา 2569</span>
+                            <i class="fa-solid fa-sparkles"></i>
+                            <span>วรรณคดีไทยโฉมใหม่ • อ่านสนุก เล่นเพลิน ลุ้นทุกตอน</span>
                         </div>
-                        
+
                         <h2 class="text-2xl sm:text-4xl font-bold leading-tight text-white">
-                            พัฒนาสื่อการ์ตูนร่วมกับเกมคำถาม<br>
+                            เสียงปี่สะกดสมุทร<br>
                             <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-yellow-200">
-                                เรื่อง พระอภัยมณี
+                                ผจญภัยไปกับพระอภัยมณี
                             </span>
                         </h2>
-                        
+
                         <p class="text-slate-300 font-body text-base sm:text-lg leading-relaxed">
-                            นวัตกรรมสื่อการเรียนรู้วรรณคดีไทยรูปแบบดิจิทัล ถ่ายทอดเรื่องราวอมตะของสุนทรภู่ผ่านภาพการ์ตูนสีสันสดใสเข้าใจง่าย พร้อมเกมทดสอบความรู้แบบโต้ตอบได้ทันที
+                            ดำดิ่งสู่โลกวรรณคดีสุดคลาสสิกของสุนทรภู่ในรูปแบบการ์ตูนสีสดใส อ่านง่าย ลื่นไหลทุกหน้าจอ พร้อมเกมคำถามทบทวนความรู้ 3 ตอน ตอนละ 10 ข้อ แบบโต้ตอบได้ทันที
                         </p>
 
-                        <!-- ปุ่มลัดเข้าใช้งาน -->
                         <div class="flex flex-wrap gap-3 pt-2">
                             <button onclick="switchTab('comic')" class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-base shadow-lg shadow-amber-500/25 transition-transform active:scale-95">
                                 <i class="fa-solid fa-book-open-reader text-lg"></i>
@@ -219,60 +221,81 @@
                             </button>
                             <button onclick="switchTab('quiz')" class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-2xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-base shadow-lg shadow-sky-600/30 border border-sky-400/40 transition-transform active:scale-95">
                                 <i class="fa-solid fa-circle-question text-lg"></i>
-                                <span>เล่นเกมคำถาม (10 ข้อ)</span>
+                                <span>เล่นเกมคำถาม (30 ข้อ)</span>
                             </button>
                         </div>
                     </div>
 
-                    <!-- ภาพประกอบ Hero (SVG พระอภัยมณีเป่าปี่ริมทะเล) -->
+                    <!-- ภาพประกอบพระอภัยมณีเป่าปี่ริมทะเล -->
                     <div class="lg:col-span-5 flex justify-center">
-                        <div class="w-full max-w-sm bg-gradient-to-b from-sky-800/60 to-slate-900/90 p-4 rounded-3xl border border-amber-400/30 shadow-2xl animate-float">
-                            <svg viewBox="0 0 360 270" class="w-full h-auto rounded-2xl overflow-hidden">
+                        <div class="w-full max-w-sm bg-gradient-to-b from-sky-900/70 to-slate-950/95 p-4 rounded-3xl border border-amber-400/40 shadow-2xl animate-float">
+                            <svg viewBox="0 0 380 290" class="w-full h-auto rounded-2xl overflow-hidden">
                                 <defs>
-                                    <linearGradient id="heroSky" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="0%" stop-color="#0284C7"/>
-                                        <stop offset="60%" stop-color="#38BDF8"/>
-                                        <stop offset="100%" stop-color="#FEF08A"/>
+                                    <linearGradient id="heroSkyNew" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stop-color="#0F172A"/>
+                                        <stop offset="45%" stop-color="#0369A1"/>
+                                        <stop offset="100%" stop-color="#FDE68A"/>
                                     </linearGradient>
-                                    <linearGradient id="heroSea" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="0%" stop-color="#0369A1"/>
-                                        <stop offset="100%" stop-color="#0F172A"/>
+                                    <linearGradient id="heroSeaNew" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stop-color="#0284C7"/>
+                                        <stop offset="55%" stop-color="#0C4A6E"/>
+                                        <stop offset="100%" stop-color="#020617"/>
+                                    </linearGradient>
+                                    <linearGradient id="goldArmor" x1="0" y1="0" x2="1" y2="1">
+                                        <stop offset="0%" stop-color="#FEF08A"/>
+                                        <stop offset="50%" stop-color="#F59E0B"/>
+                                        <stop offset="100%" stop-color="#B45309"/>
+                                    </linearGradient>
+                                    <linearGradient id="skinTone" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stop-color="#FED7AA"/>
+                                        <stop offset="100%" stop-color="#FDBA74"/>
                                     </linearGradient>
                                 </defs>
-                                <!-- ท้องฟ้าและดวงอาทิตย์ -->
-                                <rect width="360" height="270" fill="url(#heroSky)"/>
-                                <circle cx="280" cy="70" r="36" fill="#FDE047" opacity="0.9"/>
-                                <circle cx="280" cy="70" r="46" fill="#FDE047" opacity="0.3"/>
-                                <!-- ก้อนเมฆ -->
-                                <path d="M40 55 Q55 40 70 55 Q85 45 95 60 L35 60 Z" fill="#FFFFFF" opacity="0.85"/>
-                                <!-- น้ำทะเล -->
-                                <rect x="0" y="160" width="360" height="110" fill="url(#heroSea)"/>
-                                <path d="M0 175 Q45 165 90 175 T180 175 T270 175 T360 175" stroke="#7DD3FC" stroke-width="2.5" fill="none" opacity="0.6"/>
-                                <path d="M0 198 Q45 188 90 198 T180 198 T270 198 T360 198" stroke="#38BDF8" stroke-width="2" fill="none" opacity="0.4"/>
-                                <!-- โขดหินริมหาด -->
-                                <path d="M0 270 L0 195 Q60 175 130 205 Q175 225 200 270 Z" fill="#475569"/>
-                                <path d="M0 270 L0 215 Q50 200 105 225 L135 270 Z" fill="#334155"/>
-                                <!-- ตัวละครพระอภัยมณีนั่งเป่าปี่ -->
-                                <g transform="translate(65, 118)">
-                                    <!-- ผ้านุ่งโจงกระเบนสีทองแดง -->
-                                    <path d="M22 65 L52 65 L60 92 L14 92 Z" fill="#B45309"/>
-                                    <!-- ลำตัวและสังวาลทอง -->
-                                    <rect x="26" y="36" width="22" height="32" rx="8" fill="#FDBA74"/>
-                                    <line x1="27" y1="38" x2="47" y2="64" stroke="#FBBF24" stroke-width="3"/>
-                                    <!-- ศีรษะและชฎา/รัดเกล้า -->
-                                    <circle cx="37" cy="23" r="13" fill="#FDBA74"/>
-                                    <path d="M24 19 Q37 8 50 19 Z" fill="#1E293B"/>
-                                    <!-- ยอดชฎาทอง -->
-                                    <polygon points="31,13 37,-4 43,13" fill="#F59E0B" stroke="#FEF08A" stroke-width="1"/>
-                                    <!-- ดวงตาพริ้มเป่าปี่ -->
-                                    <path d="M40 22 Q43 20 46 22" stroke="#1E293B" stroke-width="2" fill="none"/>
-                                    <!-- แขนและปี่วิเศษ -->
-                                    <path d="M35 44 L54 33" stroke="#FDBA74" stroke-width="6" stroke-linecap="round"/>
-                                    <line x1="46" y1="27" x2="96" y2="39" stroke="#FDE047" stroke-width="4.5" stroke-linecap="round"/>
-                                    <!-- ตัวโน้ตดนตรีลอยออกจากปี่ -->
-                                    <text x="102" y="25" fill="#FEF08A" font-size="18" font-weight="bold">♪</text>
-                                    <text x="122" y="14" fill="#FFFFFF" font-size="22" font-weight="bold">♫</text>
-                                    <text x="135" y="36" fill="#FDE047" font-size="16" font-weight="bold">♩</text>
+                                <rect width="380" height="290" fill="url(#heroSkyNew)"/>
+                                <circle cx="300" cy="68" r="34" fill="#FEF08A"/>
+                                <circle cx="300" cy="68" r="52" fill="#FDE047" opacity="0.22"/>
+                                <circle cx="55" cy="42" r="2" fill="#FEF9C3" opacity="0.9"/>
+                                <circle cx="120" cy="30" r="1.5" fill="#FFFFFF" opacity="0.8"/>
+                                <circle cx="195" cy="48" r="2.2" fill="#FEF08A" opacity="0.85"/>
+                                <circle cx="245" cy="28" r="1.5" fill="#FFFFFF" opacity="0.7"/>
+                                <path d="M35 76 Q52 58 74 70 Q94 56 112 76 Z" fill="#F8FAFC" opacity="0.45"/>
+                                <rect x="0" y="168" width="380" height="122" fill="url(#heroSeaNew)"/>
+                                <ellipse cx="300" cy="195" rx="48" ry="6" fill="#FDE047" opacity="0.25"/>
+                                <ellipse cx="300" cy="218" rx="34" ry="4.5" fill="#FDE047" opacity="0.2"/>
+                                <path d="M0 185 Q48 175 96 185 T192 185 T288 185 T380 185" stroke="#7DD3FC" stroke-width="2.5" fill="none" opacity="0.55"/>
+                                <path d="M15 215 Q65 205 115 215 T215 215 T315 215 T380 215" stroke="#38BDF8" stroke-width="2" fill="none" opacity="0.35"/>
+                                <path d="M0 290 L0 198 Q58 176 124 206 Q168 226 196 290 Z" fill="#334155"/>
+                                <path d="M0 290 L0 218 Q48 202 102 228 L132 290 Z" fill="#1E293B"/>
+                                <path d="M12 204 Q56 186 112 210" stroke="#94A3B8" stroke-width="2" fill="none" opacity="0.5"/>
+                                <g transform="translate(52, 102)">
+                                    <path d="M26 56 Q2 68 -8 98 Q14 88 30 74 Z" fill="#F59E0B" opacity="0.85"/>
+                                    <path d="M22 74 L58 74 L68 106 L44 102 L38 112 L16 104 Z" fill="#991B1B" stroke="#FBBF24" stroke-width="1.5"/>
+                                    <path d="M24 42 Q40 38 56 42 L54 76 L26 76 Z" fill="url(#skinTone)"/>
+                                    <path d="M26 44 L54 72 M54 44 L26 72" stroke="url(#goldArmor)" stroke-width="3.5" stroke-linecap="round"/>
+                                    <rect x="24" y="70" width="32" height="6" rx="2" fill="url(#goldArmor)"/>
+                                    <path d="M27 42 Q40 50 53 42" stroke="#FBBF24" stroke-width="3" fill="none"/>
+                                    <ellipse cx="26" cy="56" rx="4" ry="2.5" fill="#FBBF24"/>
+                                    <ellipse cx="54" cy="56" rx="4" ry="2.5" fill="#FBBF24"/>
+                                    <circle cx="40" cy="27" r="14.5" fill="url(#skinTone)"/>
+                                    <path d="M25.5 26 Q25 14 40 13 Q55 14 54.5 26 Q51 19 40 19 Q29 19 25.5 26 Z" fill="#0F172A"/>
+                                    <path d="M26 26 Q24 34 27 39" stroke="#0F172A" stroke-width="3" fill="none" stroke-linecap="round"/>
+                                    <path d="M25 18 Q40 11 55 18 L51 22 Q40 16 29 22 Z" fill="url(#goldArmor)"/>
+                                    <path d="M32 16 Q38 0 40 -12 Q42 0 48 16 Z" fill="url(#goldArmor)" stroke="#FEF08A" stroke-width="0.8"/>
+                                    <circle cx="40" cy="-13" r="2.5" fill="#FEF9C3"/>
+                                    <path d="M35 24 Q38 22 40 24" stroke="#1E293B" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                                    <path d="M43 24 Q46 22 48 24" stroke="#1E293B" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                                    <path d="M44 27.5 Q46.5 26 49 27.5" stroke="#0F172A" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+                                    <path d="M41 27 L40 31 L42 31.5" stroke="#C2410C" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+                                    <path d="M41 35 Q44.5 36.5 47.5 35" stroke="#9A3412" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+                                    <path d="M28 46 Q35 55 46 42" stroke="url(#skinTone)" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+                                    <path d="M52 46 Q56 54 48 45" stroke="url(#skinTone)" stroke-width="6" fill="none" stroke-linecap="round"/>
+                                    <path d="M42 36 L112 49" stroke="url(#goldArmor)" stroke-width="5" stroke-linecap="round"/>
+                                    <ellipse cx="42" cy="36" rx="3" ry="4.5" fill="#FEF08A"/>
+                                    <path d="M122 34 Q130 46 122 58" stroke="#FEF08A" stroke-width="2" fill="none" opacity="0.85"/>
+                                    <path d="M132 26 Q144 46 132 66" stroke="#7DD3FC" stroke-width="2" fill="none" opacity="0.65"/>
+                                    <text x="144" y="34" fill="#FEF08A" font-size="18" font-weight="bold">♪</text>
+                                    <text x="166" y="22" fill="#FFFFFF" font-size="22" font-weight="bold">♫</text>
+                                    <text x="176" y="46" fill="#FDE047" font-size="16" font-weight="bold">♩</text>
                                 </g>
                             </svg>
                             <p class="text-center text-xs text-amber-200/90 mt-2 font-medium">
@@ -283,7 +306,273 @@
                 </div>
             </div>
 
-            <!-- ข้อมูลผู้จัดทำโครงงาน (อ้างอิงตามเอกสาร PDF) -->
+            <!-- การ์ดทางลัดเข้าสู่หมวดต่างๆ -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div onclick="switchTab('characters')" class="thai-card rounded-3xl p-6 cursor-pointer group">
+                    <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center text-xl mb-4 group-hover:scale-105 transition-transform">
+                        <i class="fa-solid fa-masks-theater"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 group-hover:text-amber-700 transition-colors">รู้จักตัวละครเอก</h3>
+                    <p class="font-body text-slate-600 text-sm sm:text-base mt-1.5 leading-relaxed">
+                        รวมตัวละครสำคัญครบถ้วน ทั้งชื่อเรียกและชื่อเต็มตามวรรณคดี พร้อมภาพกราฟิกและบทบาทเด่น
+                    </p>
+                </div>
+
+                <div onclick="switchTab('comic')" class="thai-card rounded-3xl p-6 cursor-pointer group">
+                    <div class="w-12 h-12 rounded-2xl bg-sky-100 text-sky-700 flex items-center justify-center text-xl mb-4 group-hover:scale-105 transition-transform">
+                        <i class="fa-solid fa-book-open"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 group-hover:text-sky-700 transition-colors">การ์ตูน 5 ตอนจบ</h3>
+                    <p class="font-body text-slate-600 text-sm sm:text-base mt-1.5 leading-relaxed">
+                        ติดตามเส้นทางการผจญภัยตั้งแต่กำเนิดวิชาปี่ การหนีภัยใต้สมุทร จนถึงศึกเก้าทัพและทางธรรม
+                    </p>
+                </div>
+
+                <div onclick="switchTab('quiz')" class="thai-card rounded-3xl p-6 cursor-pointer group">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xl mb-4 group-hover:scale-105 transition-transform">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">เกมคำถาม 3 ตอน (30 ข้อ)</h3>
+                    <p class="font-body text-slate-600 text-sm sm:text-base mt-1.5 leading-relaxed">
+                        เลือกเล่นแยก 3 ตอน ตอนละ 10 ข้อ พร้อมตรวจคำตอบทันที คำอธิบายเฉลย และสรุปผลคะแนน
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. หมวดตัวละคร -->
+        <section id="tab-characters" class="tab-content space-y-6">
+            <div class="text-center max-w-2xl mx-auto space-y-2">
+                <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-bold">แนะนำตัวละครสำคัญครบถ้วน</span>
+                <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">ตัวละครหลักและตัวละครสำคัญในเรื่อง พระอภัยมณี</h2>
+                <p class="text-slate-600 font-body text-base">รวมทั้งชื่อเรียกคุ้นเคย ชื่อเต็มตามวรรณคดี และบทบาทสำคัญของแต่ละตัวละคร</p>
+            </div>
+
+            <div id="characters-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"></div>
+        </section>
+
+        <!-- 3. หมวดอ่านการ์ตูน -->
+        <section id="tab-comic" class="tab-content space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-3xl border-2 border-amber-200 shadow-sm">
+                <div>
+                    <span class="text-xs font-bold text-sky-600 uppercase tracking-wider">สื่อการ์ตูนดิจิทัล 5 ตอนจบ</span>
+                    <h2 class="text-xl sm:text-2xl font-bold text-slate-900">เรื่องย่อพระอภัยมณี ฉบับการ์ตูน</h2>
+                </div>
+                <div class="flex flex-wrap gap-1.5" id="episode-selector"></div>
+            </div>
+
+            <div class="thai-card rounded-3xl overflow-hidden">
+                <div class="bg-gradient-to-r from-sky-900 to-slate-900 text-white px-6 py-4 flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                        <span id="comic-ep-badge" class="text-xs font-bold px-2.5 py-1 rounded-lg bg-amber-500 text-slate-950 mr-2">ตอนที่ 1</span>
+                        <h3 id="comic-ep-title" class="inline text-base sm:text-xl font-bold">กำเนิดวิชาปี่และเนรเทศ</h3>
+                    </div>
+                    <div class="text-xs sm:text-sm text-amber-300 font-medium">
+                        ฉากที่ <span id="comic-scene-num">1</span> / <span id="comic-scene-total">3</span>
+                    </div>
+                </div>
+
+                <div class="w-full bg-slate-200 h-2">
+                    <div id="comic-progress-bar" class="bg-amber-500 h-2 transition-all duration-300" style="width: 33.33%"></div>
+                </div>
+
+                <div class="p-4 sm:p-8 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                    <div class="lg:col-span-7">
+                        <div id="comic-canvas-container" class="w-full aspect-[16/11] rounded-2xl overflow-hidden border-4 border-slate-800 shadow-lg bg-sky-100 relative"></div>
+                    </div>
+
+                    <div class="lg:col-span-5 flex flex-col justify-between space-y-5">
+                        <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-2xl">
+                            <span class="text-xs font-bold text-amber-700 uppercase block mb-1">
+                                <i class="fa-solid fa-feather-pointed mr-1"></i> คำบรรยายเหตุการณ์
+                            </span>
+                            <p id="comic-narration" class="font-body text-slate-800 text-base sm:text-lg leading-relaxed"></p>
+                        </div>
+
+                        <div class="space-y-2">
+                            <div class="flex items-center gap-2">
+                                <span class="w-7 h-7 rounded-full bg-sky-700 text-white text-xs flex items-center justify-center">
+                                    <i class="fa-solid fa-comment-dots"></i>
+                                </span>
+                                <span id="comic-speaker" class="font-bold text-sky-900 text-sm">ชื่อตัวละคร</span>
+                            </div>
+                            <div class="speech-bubble">
+                                <p id="comic-dialogue" class="font-sans font-medium text-slate-900 text-base sm:text-lg"></p>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 border-t border-slate-200 flex items-center justify-between gap-3">
+                            <button id="btn-prev-scene" onclick="changeScene(-1)" class="flex-1 py-3 px-4 rounded-xl bg-slate-200 hover:bg-slate-300 disabled:opacity-40 disabled:pointer-events-none text-slate-800 font-bold text-sm sm:text-base flex items-center justify-center gap-2 transition">
+                                <i class="fa-solid fa-chevron-left"></i>
+                                <span>ฉากก่อนหน้า</span>
+                            </button>
+                            <button id="btn-next-scene" onclick="changeScene(1)" class="flex-1 py-3 px-4 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-sm sm:text-base flex items-center justify-center gap-2 shadow-md transition">
+                                <span id="btn-next-text">ฉากถัดไป</span>
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. หมวดเกมคำถาม (3 ตอน ตอนละ 10 ข้อ รวม 30 ข้อ) -->
+        <section id="tab-quiz" class="tab-content max-w-3xl mx-auto">
+            <div id="quiz-start-screen" class="thai-card rounded-3xl p-6 sm:p-8 text-center space-y-6">
+                <div class="w-20 h-20 mx-auto rounded-3xl bg-gradient-to-br from-amber-400 to-amber-600 text-slate-950 flex items-center justify-center text-4xl shadow-lg border-2 border-amber-200">
+                    <i class="fa-solid fa-trophy"></i>
+                </div>
+                <div class="space-y-2">
+                    <span class="px-3 py-1 rounded-full bg-sky-100 text-sky-800 text-xs font-bold">แบบทดสอบเชิงโต้ตอบ 3 ตอน • รวม 30 ข้อ</span>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">เกมคำถามทบทวนความรู้ เรื่อง พระอภัยมณี</h2>
+                    <p class="text-slate-600 font-body text-base max-w-lg mx-auto">
+                        เลือกทำแบบทดสอบได้ทีละตอน (ตอนละ 10 ข้อ) ตรวจคำตอบทันทีพร้อมคำอธิบายเฉลย เสียงเอฟเฟกต์ และสรุปคะแนนระดับความรู้
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-left">
+                    <button onclick="selectQuizSet(0)" id="quiz-set-btn-0" class="p-4 rounded-2xl border-2 border-amber-500 bg-amber-50/90 transition shadow-sm">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-amber-500 text-slate-950">ตอนที่ 1</span>
+                            <span class="text-xs font-semibold text-amber-800">10 ข้อ</span>
+                        </div>
+                        <div class="font-bold text-slate-900 text-sm sm:text-base">จุดเริ่มต้นและภัยใต้สมุทร</div>
+                        <p class="text-xs text-slate-600 font-body mt-0.5">วิชาปี่ เนรเทศ ผีเสื้อสมุทร สินสมุทร และเกาะแก้วพิสดาร</p>
+                    </button>
+
+                    <button onclick="selectQuizSet(1)" id="quiz-set-btn-1" class="p-4 rounded-2xl border-2 border-slate-200 bg-white hover:border-amber-400 transition">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-slate-200 text-slate-800">ตอนที่ 2</span>
+                            <span class="text-xs font-semibold text-slate-600">10 ข้อ</span>
+                        </div>
+                        <div class="font-bold text-slate-900 text-sm sm:text-base">สุดสาครและการผจญภัย</div>
+                        <p class="text-xs text-slate-600 font-body mt-0.5">ม้านิลมังกร ไม้เท้าวิเศษ ชีเปลือย และคติสอนใจพระฤๅษี</p>
+                    </button>
+
+                    <button onclick="selectQuizSet(2)" id="quiz-set-btn-2" class="p-4 rounded-2xl border-2 border-slate-200 bg-white hover:border-amber-400 transition">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-slate-200 text-slate-800">ตอนที่ 3</span>
+                            <span class="text-xs font-semibold text-slate-600">10 ข้อ</span>
+                        </div>
+                        <div class="font-bold text-slate-900 text-sm sm:text-base">ศึกใหญ่และบั้นปลายชีวิต</div>
+                        <p class="text-xs text-slate-600 font-body mt-0.5">นางสุวรรณมาลี นางละเวงวัณฬา สงบศึกเก้าทัพ และทางธรรม</p>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-3 gap-3 max-w-md mx-auto text-sm">
+                    <div class="bg-amber-50 p-3 rounded-2xl border border-amber-200">
+                        <div class="font-bold text-amber-700 text-lg">3 ตอน</div>
+                        <div class="text-slate-600 text-xs">ตอนละ 10 ข้อ</div>
+                    </div>
+                    <div class="bg-sky-50 p-3 rounded-2xl border border-sky-200">
+                        <div class="font-bold text-sky-700 text-lg">เฉลยทันที</div>
+                        <div class="text-slate-600 text-xs">พร้อมคำอธิบาย</div>
+                    </div>
+                    <div class="bg-emerald-50 p-3 rounded-2xl border border-emerald-200">
+                        <div class="font-bold text-emerald-700 text-lg">10 คะแนน/ตอน</div>
+                        <div class="text-slate-600 text-xs">วัดระดับความรู้</div>
+                    </div>
+                </div>
+
+                <div class="pt-2">
+                    <button onclick="startQuiz()" class="px-8 py-4 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-lg shadow-xl shadow-amber-500/20 transition-transform active:scale-95 inline-flex items-center gap-3">
+                        <i class="fa-solid fa-play"></i>
+                        <span id="start-quiz-btn-text">เริ่มทำแบบทดสอบ ตอนที่ 1</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="quiz-play-screen" class="hidden thai-card rounded-3xl overflow-hidden">
+                <div class="bg-slate-900 text-white px-6 py-4 flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                        <span id="q-set-label" class="px-2.5 py-0.5 rounded-lg bg-amber-500 text-slate-950 text-xs font-bold">ตอนที่ 1</span>
+                        <span class="text-amber-400 font-bold">ข้อที่ <span id="q-current">1</span></span>
+                        <span class="text-slate-400">/ <span id="q-total">10</span></span>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <button onclick="toggleSound()" id="sound-toggle-btn" class="text-slate-300 hover:text-amber-400 text-sm flex items-center gap-1.5" title="เปิด/ปิดเสียงเอฟเฟกต์">
+                            <i id="sound-icon" class="fa-solid fa-volume-high"></i>
+                            <span class="hidden sm:inline">เสียงเปิดอยู่</span>
+                        </button>
+                        <div class="bg-amber-500/20 border border-amber-400/40 px-3.5 py-1 rounded-full text-amber-300 font-bold text-sm">
+                            คะแนน: <span id="q-score">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-full bg-slate-200 h-2.5">
+                    <div id="q-progress-bar" class="bg-gradient-to-r from-amber-500 to-emerald-500 h-2.5 transition-all duration-300" style="width: 10%"></div>
+                </div>
+
+                <div class="p-6 sm:p-8 space-y-6">
+                    <h3 id="q-question-text" class="text-lg sm:text-2xl font-bold text-slate-900 leading-snug"></h3>
+                    <div id="q-options-container" class="space-y-3"></div>
+
+                    <div id="q-feedback-box" class="hidden rounded-2xl p-4 sm:p-5 border-2 transition-all">
+                        <div class="flex items-start gap-3">
+                            <div id="q-feedback-icon" class="text-2xl mt-0.5"></div>
+                            <div class="space-y-1 flex-grow">
+                                <h4 id="q-feedback-title" class="font-bold text-base sm:text-lg"></h4>
+                                <p id="q-feedback-explanation" class="font-body text-sm sm:text-base text-slate-700"></p>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex justify-end">
+                            <button onclick="nextQuestion()" id="q-next-btn" class="px-6 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm sm:text-base inline-flex items-center gap-2 transition">
+                                <span>ข้อถัดไป</span>
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="quiz-result-screen" class="hidden thai-card rounded-3xl p-8 text-center space-y-6">
+                <div id="result-badge-icon" class="w-24 h-24 mx-auto rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-5xl shadow-inner">
+                    <i class="fa-solid fa-crown"></i>
+                </div>
+
+                <div class="space-y-2">
+                    <span id="result-rank-badge" class="px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-800 text-sm font-bold">
+                        ระดับ: ยอดเยี่ยม
+                    </span>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">สรุปผลการทดสอบความรู้ (<span id="result-set-name">ตอนที่ 1</span>)</h2>
+                    <p id="result-message" class="text-slate-600 font-body text-base max-w-md mx-auto"></p>
+                </div>
+
+                <div class="bg-gradient-to-br from-slate-900 to-sky-950 text-white max-w-xs mx-auto p-6 rounded-3xl shadow-lg border-2 border-amber-400">
+                    <span class="text-xs text-amber-300 uppercase tracking-wider block mb-1">คะแนนรวมของตอนนี้</span>
+                    <div class="text-5xl font-bold text-amber-400">
+                        <span id="result-final-score">0</span><span class="text-2xl text-slate-400">/10</span>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap justify-center gap-3 pt-2">
+                    <button onclick="startQuiz()" class="px-6 py-3.5 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-base shadow-md inline-flex items-center gap-2 transition">
+                        <i class="fa-solid fa-rotate-right"></i>
+                        <span>เล่นตอนนี้อีกครั้ง</span>
+                    </button>
+                    <button onclick="backToQuizMenu()" class="px-6 py-3.5 rounded-2xl bg-emerald-100 hover:bg-emerald-200 text-emerald-950 font-bold text-base inline-flex items-center gap-2 transition">
+                        <i class="fa-solid fa-list-check"></i>
+                        <span>เลือกเล่นตอนอื่น</span>
+                    </button>
+                    <button onclick="switchTab('comic')" class="px-6 py-3.5 rounded-2xl bg-sky-100 hover:bg-sky-200 text-sky-900 font-bold text-base inline-flex items-center gap-2 transition">
+                        <i class="fa-solid fa-book-open"></i>
+                        <span>กลับไปทบทวนการ์ตูน</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. หมวดเกี่ยวกับเรา -->
+        <section id="tab-about" class="tab-content space-y-8">
+            <div class="text-center max-w-2xl mx-auto space-y-2">
+                <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-bold">ข้อมูลโครงงานและผู้จัดทำ</span>
+                <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">เกี่ยวกับเรา</h2>
+                <p class="text-slate-600 font-body text-base">
+                    รายละเอียดผู้จัดทำ วัตถุประสงค์ ขอบเขต เครื่องมือ และแผนการดำเนินงานโครงงาน
+                </p>
+            </div>
+
             <div class="thai-card rounded-3xl p-6 sm:p-8">
                 <div class="flex items-center gap-3 mb-6 border-b border-amber-200 pb-4">
                     <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-lg">
@@ -331,9 +620,7 @@
                 </div>
             </div>
 
-            <!-- วัตถุประสงค์ และ ขอบเขตของโครงงาน -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- วัตถุประสงค์ -->
                 <div class="thai-card rounded-3xl p-6 sm:p-7">
                     <div class="flex items-center gap-3 mb-4">
                         <div class="w-10 h-10 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center text-lg">
@@ -361,7 +648,6 @@
                     </ul>
                 </div>
 
-                <!-- ขอบเขตของโครงงาน -->
                 <div class="thai-card rounded-3xl p-6 sm:p-7">
                     <div class="flex items-center gap-3 mb-4">
                         <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-lg">
@@ -390,9 +676,7 @@
                 </div>
             </div>
 
-            <!-- โปรแกรมที่ใช้พัฒนาโครงงาน และ ระยะเวลาดำเนินการ 8 สัปดาห์ -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- โปรแกรมที่ใช้พัฒนาโครงงาน -->
                 <div class="thai-card rounded-3xl p-6 sm:p-7">
                     <div class="flex items-center gap-3 mb-4">
                         <div class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center text-lg">
@@ -424,4 +708,1362 @@
                                 <tr>
                                     <td class="py-2.5 px-3 font-medium">จัดทำสื่อนำเสนอ</td>
                                     <td class="py-2.5 px-3">Microsoft PowerPoint</td>
-                                <
+                                </tr>
+                                <tr>
+                                    <td class="py-2.5 px-3 font-medium">จัดเก็บและเผยแพร่</td>
+                                    <td class="py-2.5 px-3">Google Drive</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="thai-card rounded-3xl p-6 sm:p-7">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-xl bg-teal-100 text-teal-700 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-calendar-days"></i>
+                        </div>
+                        <h3 class="text-lg sm:text-xl font-bold text-slate-900">ระยะเวลาดำเนินการ (8 สัปดาห์)</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-sm sm:text-base font-body">
+                            <thead>
+                                <tr class="bg-sky-100/80 text-sky-950 border-b border-sky-200">
+                                    <th class="py-2.5 px-3 rounded-tl-xl font-sans font-semibold w-32">สัปดาห์</th>
+                                    <th class="py-2.5 px-3 rounded-tr-xl font-sans font-semibold">กิจกรรม</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-sky-100 text-slate-700">
+                                <tr>
+                                    <td class="py-2.5 px-3 font-bold text-sky-900 whitespace-nowrap">สัปดาห์ที่ 1–2</td>
+                                    <td class="py-2.5 px-3">ศึกษาข้อมูล วางแผน และขออนุมัติหัวข้อโครงงาน</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2.5 px-3 font-bold text-sky-900 whitespace-nowrap">สัปดาห์ที่ 3–4</td>
+                                    <td class="py-2.5 px-3">เขียนเนื้อเรื่อง ออกแบบตัวละครและฉาก</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2.5 px-3 font-bold text-sky-900 whitespace-nowrap">สัปดาห์ที่ 5–6</td>
+                                    <td class="py-2.5 px-3">วาดภาพการ์ตูน และจัดทำชุดคำถาม-คำตอบ</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2.5 px-3 font-bold text-sky-900 whitespace-nowrap">สัปดาห์ที่ 7</td>
+                                    <td class="py-2.5 px-3">ประกอบสื่อ พัฒนาระบบเกม ทดสอบและแก้ไขข้อผิดพลาด</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2.5 px-3 font-bold text-sky-900 whitespace-nowrap">สัปดาห์ที่ 8</td>
+                                    <td class="py-2.5 px-3">จัดทำรายงานและนำเสนอผลงาน</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="bg-slate-900 text-slate-400 py-6 px-4 mt-12 border-t-2 border-amber-500/40">
+        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm text-center sm:text-left">
+            <div>
+                <p class="text-white font-semibold">เสียงปี่แห่งสมุทร • โลกการ์ตูนและเกมพระอภัยมณี</p>
+                <p>จัดทำโดย นางสาวทักษพร ภู่ระหงษ์ ปวช. 3/2 • วิทยาลัยเทคนิคประจวบคีรีขันธ์</p>
+            </div>
+            <div class="text-amber-400/90 font-medium">
+                กลุ่มสาระการเรียนรู้ภาษาไทย • ปีการศึกษา 2569
+            </div>
+        </div>
+    </footer>
+
+    <!-- ================= JAVASCRIPT LOGIC & DATA ================= -->
+    <script>
+        // ระบบสลับหน้าแท็บหลัก
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-amber-500', 'text-slate-950', 'shadow', 'active');
+                btn.classList.add('text-slate-300', 'hover:text-white', 'hover:bg-slate-700/70');
+            });
+
+            const targetTab = document.getElementById('tab-' + tabId);
+            if (targetTab) {
+                targetTab.classList.add('active');
+            }
+
+            const activeBtn = document.getElementById('nav-' + tabId);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-slate-300', 'hover:text-white', 'hover:bg-slate-700/70');
+                activeBtn.classList.add('bg-amber-500', 'text-slate-950', 'shadow', 'active');
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ข้อมูลตัวละครครบถ้วน (ชื่อเรียก + ชื่อเต็ม + ภาพ SVG)
+        const charactersData = [
+            {
+                name: "พระอภัยมณี",
+                fullName: "พระอภัยมณี (พระหน่อไทแห่งกรุงรัตนา)",
+                role: "ตัวเอกของเรื่อง • เจ้าชายนักเป่าปี่",
+                badgeColor: "bg-amber-100 text-amber-800",
+                desc: "โอรสองค์โตของท้าวสุทัศน์ มีรูปโฉมงดงามเปี่ยมเสน่ห์ เชี่ยวชาญวิชาเป่าปี่จากอาจารย์ทิศาปาโมกข์ จนสะกดใจผู้คนและสัตว์น้ำได้ เป็นคนอ่อนโยน รักสงบ และมีเมตตา",
+                svg: `<svg viewBox="0 0 200 200" class="w-full h-full">
+                    <defs>
+                        <linearGradient id="bgAphai2" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#0F172A"/>
+                            <stop offset="55%" stop-color="#0369A1"/>
+                            <stop offset="100%" stop-color="#FDE68A"/>
+                        </linearGradient>
+                        <linearGradient id="goldAphai2" x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0%" stop-color="#FEF9C3"/>
+                            <stop offset="45%" stop-color="#F59E0B"/>
+                            <stop offset="100%" stop-color="#92400E"/>
+                        </linearGradient>
+                        <linearGradient id="skinAphai2" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#FFEDD5"/>
+                            <stop offset="100%" stop-color="#FDBA74"/>
+                        </linearGradient>
+                        <radialGradient id="auraAphai" cx="50%" cy="48%" r="45%">
+                            <stop offset="0%" stop-color="#FEF08A" stop-opacity="0.45"/>
+                            <stop offset="100%" stop-color="#FEF08A" stop-opacity="0"/>
+                        </radialGradient>
+                    </defs>
+                    <rect width="200" height="200" fill="url(#bgAphai2)"/>
+                    <circle cx="100" cy="96" r="78" fill="url(#auraAphai)"/>
+                    <path d="M58 126 Q24 134 12 176 Q42 162 66 138 Z" fill="url(#goldAphai2)" opacity="0.9"/>
+                    <path d="M142 126 Q172 136 186 174 Q158 160 134 138 Z" fill="#DC2626" opacity="0.85"/>
+                    <path d="M50 200 Q58 130 100 130 Q142 130 150 200 Z" fill="url(#skinAphai2)"/>
+                    <path d="M56 136 L144 136 L140 200 L60 200 Z" fill="#7F1D1D"/>
+                    <path d="M66 134 L134 194 M134 134 L66 194" stroke="url(#goldAphai2)" stroke-width="6" stroke-linecap="round"/>
+                    <path d="M72 130 Q100 145 128 130" stroke="url(#goldAphai2)" stroke-width="5" fill="none" stroke-linecap="round"/>
+                    <circle cx="100" cy="142" r="4" fill="#FEF08A"/>
+                    <ellipse cx="58" cy="156" rx="7" ry="4" fill="url(#goldAphai2)"/>
+                    <ellipse cx="142" cy="156" rx="7" ry="4" fill="url(#goldAphai2)"/>
+                    <path d="M68 80 Q68 56 100 56 Q132 56 132 80 Q132 114 100 122 Q68 114 68 80 Z" fill="url(#skinAphai2)"/>
+                    <path d="M74 104 Q100 120 126 104 Q114 122 100 122 Q86 122 74 104 Z" fill="#EA580C" opacity="0.16"/>
+                    <path d="M66 78 Q66 52 100 50 Q134 52 134 78 Q124 64 100 64 Q76 64 66 78 Z" fill="#090D16"/>
+                    <path d="M68 78 Q64 94 69 104" stroke="#090D16" stroke-width="4" fill="none" stroke-linecap="round"/>
+                    <path d="M132 78 Q136 94 131 104" stroke="#090D16" stroke-width="4" fill="none" stroke-linecap="round"/>
+                    <path d="M66 64 Q100 47 134 64 L125 71 Q100 58 75 71 Z" fill="url(#goldAphai2)" stroke="#78350F" stroke-width="1.2"/>
+                    <path d="M80 59 Q95 28 100 8 Q105 28 120 59 Z" fill="url(#goldAphai2)" stroke="#78350F" stroke-width="1.3"/>
+                    <circle cx="100" cy="7" r="4.8" fill="#FEF9C3" stroke="#B45309" stroke-width="1.2"/>
+                    <path d="M75 80 Q83 75 91 79" stroke="#090D16" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+                    <path d="M109 79 Q117 75 125 80" stroke="#090D16" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+                    <ellipse cx="83" cy="86" rx="4.8" ry="3.3" fill="#090D16"/>
+                    <circle cx="84.5" cy="84.8" r="1.4" fill="#FFFFFF"/>
+                    <ellipse cx="117" cy="86" rx="4.8" ry="3.3" fill="#090D16"/>
+                    <circle cx="118.5" cy="84.8" r="1.4" fill="#FFFFFF"/>
+                    <path d="M100 86 L97 97 L102 98.5" stroke="#9A3412" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    <path d="M89 107 Q100 113 111 107" stroke="#9A3412" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+                    <line x1="108" y1="105" x2="182" y2="122" stroke="url(#goldAphai2)" stroke-width="7" stroke-linecap="round"/>
+                    <circle cx="112" cy="106" r="3.2" fill="#FEF9C3"/>
+                    <text x="150" y="92" fill="#FEF08A" font-size="20" font-weight="bold">♪</text>
+                    <text x="168" y="76" fill="#FFFFFF" font-size="16" font-weight="bold">♫</text>
+                </svg>`
+            },
+            {
+                name: "นางผีเสื้อสมุทร",
+                fullName: "นางผีเสื้อสมุทร (พญานางยักษ์แห่งท้องสมุทร)",
+                role: "นางยักษ์ผู้ทรงอิทธิฤทธิ์ • มารดาของสินสมุทร",
+                badgeColor: "bg-purple-100 text-purple-800",
+                desc: "นางยักษ์แห่งถ้ำใต้ทะเลที่หลงรักพระอภัยมณีอย่างลึกซึ้ง แม้จะมีรูปร่างน่าเกรงขามและดุร้ายเมื่อโกรธ แต่ก็มีหัวใจที่รักสามีและลูกชายอย่างยิ่งยวด",
+                svg: `<svg viewBox="0 0 200 200" class="w-full h-full">
+                    <defs>
+                        <linearGradient id="bgYaksha2" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#2E1065"/>
+                            <stop offset="55%" stop-color="#6B21A8"/>
+                            <stop offset="100%" stop-color="#F3E8FF"/>
+                        </linearGradient>
+                        <linearGradient id="goldYaksha2" x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0%" stop-color="#FEF9C3"/>
+                            <stop offset="50%" stop-color="#F59E0B"/>
+                            <stop offset="100%" stop-color="#92400E"/>
+                        </linearGradient>
+                        <linearGradient id="skinYaksha2" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#C084FC"/>
+                            <stop offset="100%" stop-color="#7E22CE"/>
+                        </linearGradient>
+                    </defs>
+                    <rect width="200" height="200" fill="url(#bgYaksha2)"/>
+                    <circle cx="100" cy="96" r="76" fill="#D8B4FE" opacity="0.28"/>
+                    <circle cx="56" cy="80" r="27" fill="#3B0764"/>
+                    <circle cx="144" cy="80" r="27" fill="#3B0764"/>
+                    <circle cx="70" cy="58" r="25" fill="#4C1D95"/>
+                    <circle cx="130" cy="58" r="25" fill="#4C1D95"/>
+                    <circle cx="100" cy="50" r="29" fill="#2E1065"/>
+                    <path d="M46 200 Q56 134 100 134 Q144 134 154 200 Z" fill="#581C87" stroke="#3B0764" stroke-width="2"/>
+                    <path d="M72 136 L100 158 L128 136" stroke="url(#goldYaksha2)" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+                    <path d="M66 84 Q66 60 100 60 Q134 60 134 84 Q134 118 100 125 Q66 118 66 84 Z" fill="url(#skinYaksha2)"/>
+                    <polygon points="70,62 82,34 100,54 118,34 130,62" fill="url(#goldYaksha2)" stroke="#78350F" stroke-width="1.3"/>
+                    <circle cx="100" cy="52" r="4" fill="#EF4444"/>
+                    <path d="M74 79 Q83 74 91 79" stroke="#1E1B4B" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+                    <path d="M109 79 Q117 74 126 79" stroke="#1E1B4B" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+                    <ellipse cx="82" cy="86" rx="5.5" ry="4.2" fill="#FEF08A"/>
+                    <circle cx="82" cy="86" r="2.4" fill="#090D16"/>
+                    <ellipse cx="118" cy="86" rx="5.5" ry="4.2" fill="#FEF08A"/>
+                    <circle cx="118" cy="86" r="2.4" fill="#090D16"/>
+                    <path d="M80 108 Q100 100 120 108" stroke="#2E1065" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+                    <polygon points="84,106 87.5,95 91,105" fill="#FFFFFF"/>
+                    <polygon points="109,105 112.5,95 116,106" fill="#FFFFFF"/>
+                </svg>`
+            },
+            {
+                name: "สินสมุทร",
+                fullName: "พระสินสมุทร (โอรสพระอภัยมณีกับนางผีเสื้อสมุทร)",
+                role: "เจ้าชายน้อยผู้กล้าหาญ • พละกำลังมหาศาล",
+                badgeColor: "bg-sky-100 text-sky-800",
+                desc: "โอรสของพระอภัยมณีกับนางผีเสื้อสมุทร มีรูปโฉมงดงามเหมือนบิดาแต่มีเขี้ยวเล็กๆ และพละกำลังแข็งแรงดุจยักษ์ เป็นเด็กกตัญญู กล้าหาญ และปกป้องบิดาเสมอ",
+                svg: `<svg viewBox="0 0 200 200" class="w-full h-full">
+                    <defs>
+                        <linearGradient id="bgSin2" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#0284C7"/>
+                            <stop offset="55%" stop-color="#38BDF8"/>
+                            <stop offset="100%" stop-color="#E0F2FE"/>
+                        </linearGradient>
+                        <linearGradient id="skinSin2" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#FFEDD5"/>
+                            <stop offset="100%" stop-color="#FDBA74"/>
+                        </linearGradient>
+                    </defs>
+                    <rect width="200" height="200" fill="url(#bgSin2)"/>
+                    <circle cx="100" cy="96" r="76" fill="#FEF08A" opacity="0.22"/>
+                    <path d="M54 200 Q62 136 100 136 Q138 136 146 200 Z" fill="url(#skinSin2)"/>
+                    <path d="M62 140 L138 140 L134 200 L66 200 Z" fill="#0369A1"/>
+                    <path d="M74 138 L126 190" stroke="#FBBF24" stroke-width="4.5" stroke-linecap="round"/>
+                    <path d="M69 88 Q69 66 100 66 Q131 66 131 88 Q131 118 100 124 Q69 118 69 88 Z" fill="url(#skinSin2)"/>
+                    <path d="M67 82 Q100 60 133 82 Z" fill="#090D16"/>
+                    <circle cx="100" cy="49" r="13.5" fill="#090D16"/>
+                    <ellipse cx="100" cy="61" rx="16" ry="5" fill="#F59E0B" stroke="#92400E" stroke-width="1.2"/>
+                    <path d="M76 84 Q83 80 90 84" stroke="#090D16" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+                    <path d="M110 84 Q117 80 124 84" stroke="#090D16" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+                    <circle cx="83" cy="90" r="3.8" fill="#090D16"/>
+                    <circle cx="84.4" cy="88.6" r="1.3" fill="#FFFFFF"/>
+                    <circle cx="117" cy="90" r="3.8" fill="#090D16"/>
+                    <circle cx="118.4" cy="88.6" r="1.3" fill="#FFFFFF"/>
+                    <path d="M88 107 Q100 113 112 107" stroke="#9A3412" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                    <polygon points="90,107 92.5,101.5 95,107.5" fill="#FFFFFF"/>
+                    <polygon points="105,107.5 107.5,101.5 110,107" fill="#FFFFFF"/>
+                </svg>`
+            },
+            {
+                name: "นางเงือก",
+                fullName: "นางเงือกน้อย (ธิดาเงือกแห่งท้องทะเล • มารดาสุดสาคร)",
+                role: "ผู้ช่วยเหลือพระอภัยมณี • มารดาของสุดสาคร",
+                badgeColor: "bg-teal-100 text-teal-800",
+                desc: "เงือกสาวผู้มีจิตใจงดงามและอ่อนโยน อาสาพาพระอภัยมณีและสินสมุทรว่ายน้ำหนีจากถ้ำนางผีเสื้อสมุทรไปยังเกาะแก้วพิสดาร ต่อมาได้ให้กำเนิดสุดสาคร",
+                svg: `<svg viewBox="0 0 200 200" class="w-full h-full">
+                    <defs>
+                        <linearGradient id="bgMermaid2" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#0F766E"/>
+                            <stop offset="55%" stop-color="#2DD4BF"/>
+                            <stop offset="100%" stop-color="#CCFBF1"/>
+                        </linearGradient>
+                        <linearGradient id="skinMermaid2" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#FFF7ED"/>
+                            <stop offset="100%" stop-color="#FED7AA"/>
+                        </linearGradient>
+                    </defs>
+                    <rect width="200" height="200" fill="url(#bgMermaid2)"/>
+                    <circle cx="100" cy="96" r="76" fill="#99F6E4" opacity="0.32"/>
+                    <path d="M58 80 Q50 152 34 182 L166 182 Q150 152 142 80 Z" fill="#090D16"/>
+                    <path d="M66 200 Q72 134 100 134 Q128 134 134 200 Z" fill="url(#skinMermaid2)"/>
+                    <path d="M68 164 Q100 152 132 164 L138 200 L62 200 Z" fill="#0D9488"/>
+                    <path d="M70 86 Q70 64 100 64 Q130 64 130 86 Q130 116 100 122 Q70 116 70 86 Z" fill="url(#skinMermaid2)"/>
+                    <circle cx="128" cy="72" r="9.5" fill="#F43F5E"/>
+                    <circle cx="128" cy="72" r="3.4" fill="#FDE047"/>
+                    <path d="M77 82 Q84 78 91 82" stroke="#090D16" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    <path d="M109 82 Q116 78 123 82" stroke="#090D16" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    <circle cx="84" cy="88" r="3.6" fill="#090D16"/>
+                    <circle cx="85.4" cy="86.6" r="1.2" fill="#FFFFFF"/>
+                    <circle cx="116" cy="88" r="3.6" fill="#090D16"/>
+                    <circle cx="117.4" cy="86.6" r="1.2" fill="#FFFFFF"/>
+                    <path d="M90 105 Q100 111 110 105" stroke="#E11D48" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+                </svg>`
+            },
+            {
+                name: "พระฤๅษี (พระโยคี)",
+                fullName: "พระฤๅษี / พระโยคี (อาจารย์ผู้วิเศษแห่งเกาะแก้วพิสดาร)",
+                role: "ผู้ทรงศีลและวิชาอาคม • ผู้คุ้มครองและสั่งสอน",
+                badgeColor: "bg-orange-100 text-orange-800",
+                desc: "นักบวชผู้ทรงศีลและมีอาคมแก่กล้าบนเกาะแก้วพิสดาร ช่วยเสกทรายกั้นนางผีเสื้อสมุทร ชุบเลี้ยงสุดสาคร สอนวิชา และให้คติสอนใจอันล้ำค่า",
+                svg: `<svg viewBox="0 0 200 200" class="w-full h-full">
+                    <defs>
+                        <linearGradient id="bgHermit2" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#7C2D12"/>
+                            <stop offset="55%" stop-color="#EA580C"/>
+                            <stop offset="100%" stop-color="#FFEDD5"/>
+                        </linearGradient>
+                        <linearGradient id="skinHermit2" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#FFEDD5"/>
+                            <stop offset="100%" stop-color="#FDBA74"/>
+                        </linearGradient>
+                    </defs>
+                    <rect width="200" height="200" fill="url(#bgHermit2)"/>
+                    <circle cx="100" cy="96" r="76" fill="#FED7AA" opacity="0.28"/>
+                    <path d="M48 200 Q58 132 100 132 Q142 132 152 200 Z" fill="#C2410C" stroke="#7C2D12" stroke-width="1.8"/>
+                    <circle cx="76" cy="162" r="5" fill="#431407"/>
+                    <circle cx="122" cy="170" r="5" fill="#431407"/>
+                    <circle cx="100" cy="180" r="4.5" fill="#431407"/>
+                    <path d="M70 84 Q70 62 100 62 Q130 62 130 84 Q130 114 100 120 Q70 114 70 84 Z" fill="url(#skinHermit2)"/>
+                    <path d="M68 95 Q100 166 132 95 Q114 112 100 110 Q86 112 68 95 Z" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2"/>
+                    <path d="M68 68 Q100 50 132 68 Z" fill="#7C2D12"/>
+                    <rect x="86" y="34" width="28" height="28" rx="10" fill="#9A3412" stroke="#431407" stroke-width="1.4"/>
+                    <path d="M77 82 Q84 78 91 82" stroke="#090D16" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+                    <path d="M109 82 Q116 78 123 82" stroke="#090D16" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+                    <path d="M80 86 Q84 84 88 86" stroke="#090D16" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    <path d="M112 86 Q116 84 120 86" stroke="#090D16" stroke-width="2" fill="none" stroke-linecap="round"/>
+                </svg>`
+            },
+            {
+                name: "สุดสาคร",
+                fullName: "พระสุดสาคร (โอรสพระอภัยมณีกับนางเงือก)",
+                role: "นักผจญภัยแห่งท้องทะเล • ผู้ขี่ม้านิลมังกร",
+                badgeColor: "bg-indigo-100 text-indigo-800",
+                desc: "โอรสของพระอภัยมณีกับนางเงือกที่เติบโตบนเกาะแก้วพิสดาร มีไม้เท้าวิเศษและม้านิลมังกรเป็นคู่ใจ ออกเดินทางตามหาพระบิดาด้วยความมุ่งมั่นและกล้าหาญ",
+                svg: `<svg viewBox="0 0 200 200" class="w-full h-full">
+                    <defs>
+                        <linearGradient id="bgSudsakorn2" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#312E81"/>
+                            <stop offset="55%" stop-color="#6366F1"/>
+                            <stop offset="100%" stop-color="#E0E7FF"/>
+                        </linearGradient>
+                        <linearGradient id="skinSudsakorn2" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#FFEDD5"/>
+                            <stop offset="100%" stop-color="#FDBA74"/>
+                        </linearGradient>
+                    </defs>
+                    <rect width="200" height="200" fill="url(#bgSudsakorn2)"/>
+                    <circle cx="100" cy="96" r="76" fill="#C7D2FE" opacity="0.28"/>
+                    <path d="M56 200 Q64 136 100 136 Q136 136 144 200 Z" fill="url(#skinSudsakorn2)"/>
+                    <path d="M66 140 L134 140 L130 200 L70 200 Z" fill="#3730A3"/>
+                    <path d="M70 88 Q70 66 100 66 Q130 66 130 88 Q130 118 100 124 Q70 118 70 88 Z" fill="url(#skinSudsakorn2)"/>
+                    <path d="M68 82 Q100 60 132 82 Z" fill="#090D16"/>
+                    <circle cx="100" cy="49" r="12.5" fill="#090D16"/>
+                    <ellipse cx="100" cy="61" rx="14.5" ry="4.5" fill="#FBBF24" stroke="#92400E" stroke-width="1.2"/>
+                    <path d="M77 84 Q84 80 91 84" stroke="#090D16" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+                    <path d="M109 84 Q116 80 123 84" stroke="#090D16" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+                    <circle cx="84" cy="90" r="3.8" fill="#090D16"/>
+                    <circle cx="85.4" cy="88.6" r="1.3" fill="#FFFFFF"/>
+                    <circle cx="116" cy="90" r="3.8" fill="#090D16"/>
+                    <circle cx="117.4" cy="88.6" r="1.3" fill="#FFFFFF"/>
+                    <path d="M89 107 Q100 113 111 107" stroke="#9A3412" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                    <line x1="158" y1="54" x2="158" y2="194" stroke="#92400E" stroke-width="7" stroke-linecap="round"/>
+                    <circle cx="158" cy="50" r="9.5" fill="#38BDF8" stroke="#FBBF24" stroke-width="2.2"/>
+                    <circle cx="155" cy="47" r="2.8" fill="#FFFFFF"/>
+                </svg>`
+            },
+            {
+                name: "นางสุวรรณมาลี",
+                fullName: "พระนางสุวรรณมาลี (พระธิดาแห่งเมืองผลึก)",
+                role: "พระมเหสีแห่งกรุงรัตนา • หญิงแกร่งผู้เปี่ยมปัญญา",
+                badgeColor: "bg-rose-100 text-rose-800",
+                desc: "พระธิดาของท้าวสิลราชแห่งเมืองผลึก มีรูปโฉมงดงาม สติปัญญาเฉลียวฉลาด กล้าหาญออกศึกเคียงข้างพระอภัยมณี และรักสินสมุทรกับสุดสาครดุจลูกแท้ๆ",
+                svg: `<svg viewBox="0 0 200 200" class="w-full h-full">
+                    <defs>
+                        <linearGradient id="bgSuwanna2" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#881337"/>
+                            <stop offset="55%" stop-color="#F43F5E"/>
+                            <stop offset="100%" stop-color="#FFE4E6"/>
+                        </linearGradient>
+                        <linearGradient id="skinSuwanna2" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#FFF7ED"/>
+                            <stop offset="100%" stop-color="#FED7AA"/>
+                        </linearGradient>
+                        <linearGradient id="goldSuwanna2" x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0%" stop-color="#FEF9C3"/>
+                            <stop offset="100%" stop-color="#D97706"/>
+                        </linearGradient>
+                    </defs>
+                    <rect width="200" height="200" fill="url(#bgSuwanna2)"/>
+                    <circle cx="100" cy="96" r="76" fill="#FECDD3" opacity="0.32"/>
+                    <path d="M52 200 Q60 132 100 132 Q140 132 148 200 Z" fill="url(#skinSuwanna2)"/>
+                    <path d="M68 134 L144 200 L96 200 L58 144 Z" fill="#BE123C"/>
+                    <path d="M78 132 Q100 145 122 132" stroke="url(#goldSuwanna2)" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+                    <path d="M70 86 Q70 64 100 64 Q130 64 130 86 Q130 116 100 122 Q70 116 70 86 Z" fill="url(#skinSuwanna2)"/>
+                    <path d="M68 74 Q100 54 132 74 Z" fill="#090D16"/>
+                    <path d="M84 62 Q96 34 100 16 Q104 34 116 62 Z" fill="url(#goldSuwanna2)" stroke="#78350F" stroke-width="1.2"/>
+                    <circle cx="100" cy="15" r="4" fill="#FEF9C3"/>
+                    <path d="M77 82 Q84 78 91 82" stroke="#090D16" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    <path d="M109 82 Q116 78 123 82" stroke="#090D16" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    <circle cx="84" cy="88" r="3.6" fill="#090D16"/>
+                    <circle cx="85.4" cy="86.6" r="1.2" fill="#FFFFFF"/>
+                    <circle cx="116" cy="88" r="3.6" fill="#090D16"/>
+                    <circle cx="117.4" cy="86.6" r="1.2" fill="#FFFFFF"/>
+                    <path d="M90 105 Q100 111 110 105" stroke="#BE123C" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+                </svg>`
+            },
+            {
+                name: "ศรีสุวรรณ",
+                fullName: "พระศรีสุวรรณ (พระอนุชาแห่งกรุงรัตนา)",
+                role: "เจ้าชายนักรบ • เชี่ยวชาญกระบี่กระบอง",
+                badgeColor: "bg-cyan-100 text-cyan-800",
+                desc: "พระอนุชาของพระอภัยมณี เลือกเรียนวิชากระบี่กระบองจากอาจารย์ทิศาปาโมกข์ มีความกล้าหาญ เข้มแข็ง เดินทางร่วมทุกข์ร่วมสุขกับพระเชษฐาและต่อมาได้ครองเมืองรมจักร",
+                svg: `<svg viewBox="0 0 200 200" class="w-full h-full">
+                    <defs>
+                        <linearGradient id="bgSrisuwan2" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#164E63"/>
+                            <stop offset="55%" stop-color="#06B6D4"/>
+                            <stop offset="100%" stop-color="#CFFAFE"/>
+                        </linearGradient>
+                        <linearGradient id="skinSrisuwan2" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#FFEDD5"/>
+                            <stop offset="100%" stop-color="#FDBA74"/>
+                        </linearGradient>
+                    </defs>
+                    <rect width="200" height="200" fill="url(#bgSrisuwan2)"/>
+                    <circle cx="100" cy="96" r="76" fill="#A5F3FC" opacity="0.28"/>
+                    <path d="M52 200 Q60 132 100 132 Q140 132 148 200 Z" fill="url(#skinSrisuwan2)"/>
+                    <path d="M60 134 L140 134 L136 200 L64 200 Z" fill="#0E7490"/>
+                    <path d="M70 136 L130 190" stroke="#FBBF24" stroke-width="5" stroke-linecap="round"/>
+                    <path d="M69 84 Q69 60 100 60 Q131 60 131 84 Q131 116 100 122 Q69 116 69 84 Z" fill="url(#skinSrisuwan2)"/>
+                    <path d="M67 70 Q100 52 133 70 Z" fill="#090D16"/>
+                    <path d="M84 60 Q96 32 100 14 Q104 32 116 60 Z" fill="#38BDF8" stroke="#0369A1" stroke-width="1.3"/>
+                    <circle cx="100" cy="13" r="4" fill="#FEF9C3"/>
+                    <path d="M76 81 Q84 76 91 81" stroke="#090D16" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+                    <path d="M109 81 Q116 76 124 81" stroke="#090D16" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+                    <circle cx="84" cy="87" r="3.8" fill="#090D16"/>
+                    <circle cx="85.4" cy="85.6" r="1.3" fill="#FFFFFF"/>
+                    <circle cx="116" cy="87" r="3.8" fill="#090D16"/>
+                    <circle cx="117.4" cy="85.6" r="1.3" fill="#FFFFFF"/>
+                    <path d="M100 87 L98 97 L102 98.5" stroke="#9A3412" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    <path d="M89 106 Q100 111 111 106" stroke="#9A3412" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+                    <line x1="160" y1="42" x2="160" y2="194" stroke="#334155" stroke-width="8" stroke-linecap="round"/>
+                    <line x1="160" y1="42" x2="160" y2="194" stroke="#94A3B8" stroke-width="2" stroke-dasharray="6 8"/>
+                </svg>`
+            },
+            {
+                name: "นางละเวงวัณฬา",
+                fullName: "พระนางละเวงวัณฬา (กษัตริย์ผู้ครองกรุงลังกา)",
+                role: "เจ้าหญิงแห่งลังกา • ผู้นำทัพศึกเก้าทัพ",
+                badgeColor: "bg-emerald-100 text-emerald-800",
+                desc: "พระธิดาแห่งกรุงลังกาผู้สืบราชบัลลังก์ต่อจากพระบิดา มีสติปัญญาและเล่ห์เหลี่ยมทางการเมือง ทำสงครามศึกเก้าทัพเพื่อทวงแค้น ก่อนจะคลี่คลายความบาดหมางได้ในที่สุด",
+                svg: `<svg viewBox="0 0 200 200" class="w-full h-full">
+                    <defs>
+                        <linearGradient id="bgLaweng2" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#064E3B"/>
+                            <stop offset="55%" stop-color="#10B981"/>
+                            <stop offset="100%" stop-color="#D1FAE5"/>
+                        </linearGradient>
+                        <linearGradient id="skinLaweng2" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#FFF7ED"/>
+                            <stop offset="100%" stop-color="#FED7AA"/>
+                        </linearGradient>
+                        <linearGradient id="goldLaweng2" x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0%" stop-color="#FEF9C3"/>
+                            <stop offset="100%" stop-color="#D97706"/>
+                        </linearGradient>
+                    </defs>
+                    <rect width="200" height="200" fill="url(#bgLaweng2)"/>
+                    <circle cx="100" cy="96" r="76" fill="#A7F3D0" opacity="0.32"/>
+                    <path d="M52 200 Q60 132 100 132 Q140 132 148 200 Z" fill="url(#skinLaweng2)"/>
+                    <path d="M58 134 L142 134 L150 200 L50 200 Z" fill="#047857"/>
+                    <path d="M76 132 Q100 146 124 132" stroke="url(#goldLaweng2)" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+                    <path d="M70 86 Q70 64 100 64 Q130 64 130 86 Q130 116 100 122 Q70 116 70 86 Z" fill="url(#skinLaweng2)"/>
+                    <path d="M68 74 Q100 54 132 74 Z" fill="#090D16"/>
+                    <path d="M83 62 Q95 34 100 16 Q105 34 117 62 Z" fill="url(#goldLaweng2)" stroke="#78350F" stroke-width="1.2"/>
+                    <circle cx="100" cy="15" r="4" fill="#FEF9C3"/>
+                    <path d="M77 82 Q84 78 91 82" stroke="#090D16" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    <path d="M109 82 Q116 78 123 82" stroke="#090D16" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    <circle cx="84" cy="88" r="3.6" fill="#090D16"/>
+                    <circle cx="85.4" cy="86.6" r="1.2" fill="#FFFFFF"/>
+                    <circle cx="116" cy="88" r="3.6" fill="#090D16"/>
+                    <circle cx="117.4" cy="86.6" r="1.2" fill="#FFFFFF"/>
+                    <path d="M90 105 Q100 110 110 105" stroke="#065F46" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+                </svg>`
+            },
+            {
+                name: "ชีเปลือย",
+                fullName: "ชีเปลือย (นักบวชจอมลวงโลกแห่งป่าเขาลำเนาไพร)",
+                role: "ตัวละครจอมเจ้าเล่ห์ • ผู้ชิงไม้เท้าวิเศษ",
+                badgeColor: "bg-stone-200 text-stone-800",
+                desc: "ชายผู้แสร้งทำตนเป็นนักบวชผู้ทรงศีลเพื่อหลอกลวงผู้คน หลอกผลักสุดสาครตกเหวเพื่อชิงไม้เท้าวิเศษและม้านิลมังกร เป็นตัวแทนของความไม่น่าไว้ใจของคนลวงโลก",
+                svg: `<svg viewBox="0 0 200 200" class="w-full h-full">
+                    <defs>
+                        <linearGradient id="bgChee2" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#292524"/>
+                            <stop offset="55%" stop-color="#78716C"/>
+                            <stop offset="100%" stop-color="#E7E5E4"/>
+                        </linearGradient>
+                        <linearGradient id="skinChee2" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#F59E0B"/>
+                            <stop offset="100%" stop-color="#B45309"/>
+                        </linearGradient>
+                    </defs>
+                    <rect width="200" height="200" fill="url(#bgChee2)"/>
+                    <circle cx="100" cy="96" r="76" fill="#D6D3D1" opacity="0.25"/>
+                    <path d="M54 200 Q62 134 100 134 Q138 134 146 200 Z" fill="url(#skinChee2)"/>
+                    <path d="M70 88 Q70 64 100 64 Q130 64 130 88 Q130 118 100 124 Q70 118 70 88 Z" fill="url(#skinChee2)"/>
+                    <path d="M64 78 Q74 48 100 50 Q126 48 136 78 Q118 64 100 66 Q82 64 64 78 Z" fill="#1C1917"/>
+                    <path d="M76 83 Q84 79 91 84" stroke="#090D16" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+                    <path d="M109 84 Q116 79 124 83" stroke="#090D16" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+                    <circle cx="84" cy="89" r="3.6" fill="#090D16"/>
+                    <circle cx="116" cy="89" r="3.6" fill="#090D16"/>
+                    <path d="M87 107 Q101 114 114 104" stroke="#451A03" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+                </svg>`
+            }
+        ];
+
+        function renderCharacters() {
+            const grid = document.getElementById('characters-grid');
+            if (!grid) return;
+            grid.innerHTML = charactersData.map(char => `
+                <div class="thai-card rounded-3xl overflow-hidden flex flex-col">
+                    <div class="h-44 w-full bg-slate-100 border-b border-amber-100 p-2 flex items-center justify-center">
+                        ${char.svg}
+                    </div>
+                    <div class="p-5 flex-grow flex flex-col justify-between space-y-3">
+                        <div>
+                            <span class="inline-block px-2.5 py-1 rounded-lg text-xs font-bold mb-2 ${char.badgeColor}">
+                                ${char.role}
+                            </span>
+                            <h3 class="text-lg font-bold text-slate-900">${char.name}</h3>
+                            <p class="text-xs font-semibold text-amber-800 mt-0.5">${char.fullName}</p>
+                            <p class="font-body text-sm text-slate-600 mt-2 leading-relaxed">
+                                ${char.desc}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ข้อมูลการ์ตูน 5 ตอน
+        const comicEpisodes = [
+            {
+                id: 1,
+                shortTitle: "ตอนที่ 1",
+                title: "กำเนิดวิชาปี่และเนรเทศ",
+                scenes: [
+                    {
+                        narration: "ท้าวสุทัศน์ส่งพระโอรสทั้งสองคือ พระอภัยมณี และ ศรีสุวรรณ ออกไปศึกษาศิลปวิทยาเพื่อกลับมาปกครองบ้านเมือง",
+                        speaker: "พระอภัยมณี",
+                        dialogue: "น้องรัก พี่เลือกเรียนวิชาเป่าปี่จากทิศาปาโมกข์ ส่วนเจ้าจงเรียนวิชากระบี่กระบองเถิด",
+                        svg: `<svg viewBox="0 0 480 330" class="w-full h-full">
+                            <rect width="480" height="330" fill="#FEF3C7"/>
+                            <polygon points="40,120 240,40 440,120" fill="#B45309"/>
+                            <rect x="70" y="120" width="340" height="170" fill="#FFFBEB"/>
+                            <rect x="85" y="120" width="16" height="170" fill="#92400E"/>
+                            <rect x="379" y="120" width="16" height="170" fill="#92400E"/>
+                            <rect x="40" y="285" width="400" height="45" fill="#78350F"/>
+                            <g transform="translate(145, 175)">
+                                <rect x="15" y="45" width="30" height="65" rx="8" fill="#FDBA74"/>
+                                <circle cx="30" cy="28" r="18" fill="#FDBA74"/>
+                                <polygon points="20,12 30,-10 40,12" fill="#F59E0B"/>
+                                <line x1="35" y1="35" x2="95" y2="50" stroke="#D97706" stroke-width="6" stroke-linecap="round"/>
+                                <text x="95" y="25" fill="#D97706" font-size="24" font-weight="bold">♪ ♫</text>
+                            </g>
+                            <g transform="translate(275, 175)">
+                                <rect x="15" y="45" width="30" height="65" rx="8" fill="#FDBA74"/>
+                                <circle cx="30" cy="28" r="18" fill="#FDBA74"/>
+                                <polygon points="20,12 30,-10 40,12" fill="#0284C7"/>
+                                <line x1="55" y1="15" x2="55" y2="110" stroke="#475569" stroke-width="8" stroke-linecap="round"/>
+                            </g>
+                        </svg>`
+                    },
+                    {
+                        narration: "เมื่อเรียนสำเร็จและกลับสู่กรุงรัตนา ท้าวสุทัศน์ทรงกริ้วที่โอรสเรียนวิชาเป่าปี่และกระบี่กระบองซึ่งไม่สมศักดิ์ศรีกษัตริย์ จึงขับไล่ออกจากเมือง",
+                        speaker: "ท้าวสุทัศน์ (พระบิดา)",
+                        dialogue: "วิชาเป่าปี่เป็นวิชาของวณิพก! พวกเจ้าจงออกไปจากเมืองของข้าเสียบัดนี้!",
+                        svg: `<svg viewBox="0 0 480 330" class="w-full h-full">
+                            <rect width="480" height="330" fill="#FEE2E2"/>
+                            <rect x="0" y="260" width="480" height="70" fill="#991B1B"/>
+                            <rect x="60" y="90" width="140" height="170" rx="20" fill="#F59E0B" stroke="#B45309" stroke-width="4"/>
+                            <g transform="translate(95, 130)">
+                                <rect x="15" y="45" width="40" height="80" rx="10" fill="#DC2626"/>
+                                <circle cx="35" cy="25" r="20" fill="#FDBA74"/>
+                                <polygon points="22,8 35,-18 48,8" fill="#FDE047"/>
+                                <line x1="55" y1="65" x2="110" y2="55" stroke="#FDBA74" stroke-width="10" stroke-linecap="round"/>
+                            </g>
+                            <g transform="translate(270, 200)">
+                                <circle cx="30" cy="25" r="16" fill="#FDBA74"/>
+                                <rect x="15" y="40" width="35" height="25" rx="8" fill="#F59E0B"/>
+                                <circle cx="100" cy="25" r="16" fill="#FDBA74"/>
+                                <rect x="85" y="40" width="35" height="25" rx="8" fill="#0284C7"/>
+                            </g>
+                        </svg>`
+                    },
+                    {
+                        narration: "สองพี่น้องระหกระเหินมาจนถึงชายทะเล พระอภัยมณีเป่าปี่กล่อมจนศรีสุวรรณและพราหมณ์สามคนหลับใหลไป",
+                        speaker: "พระอภัยมณี",
+                        dialogue: "เสียงปี่ของพี่จะช่วยปลอบประโลมความเหนื่อยล้าให้พวกเจ้าหลับฝันดี...",
+                        svg: `<svg viewBox="0 0 480 330" class="w-full h-full">
+                            <rect width="480" height="200" fill="#38BDF8"/>
+                            <rect y="200" width="480" height="130" fill="#0369A1"/>
+                            <path d="M0 240 Q140 200 280 250 L480 250 L480 330 L0 330 Z" fill="#FDE68A"/>
+                            <g transform="translate(90, 145)">
+                                <rect x="15" y="40" width="28" height="55" rx="8" fill="#FDBA74"/>
+                                <circle cx="29" cy="24" r="16" fill="#FDBA74"/>
+                                <polygon points="20,10 29,-10 38,10" fill="#F59E0B"/>
+                                <line x1="36" y1="30" x2="90" y2="42" stroke="#D97706" stroke-width="5" stroke-linecap="round"/>
+                                <text x="95" y="25" fill="#FFF" font-size="22" font-weight="bold">♪ ♫ ♩</text>
+                            </g>
+                            <g transform="translate(240, 235)">
+                                <rect x="0" y="15" width="75" height="22" rx="10" fill="#0284C7"/>
+                                <circle cx="82" cy="24" r="13" fill="#FDBA74"/>
+                                <text x="85" y="8" fill="#0369A1" font-size="16" font-weight="bold">Zzz...</text>
+                            </g>
+                        </svg>`
+                    }
+                ]
+            },
+            {
+                id: 2,
+                shortTitle: "ตอนที่ 2",
+                title: "นางผีเสื้อสมุทรลักพาตัว",
+                scenes: [
+                    {
+                        narration: "เสียงปี่ของพระอภัยมณีดังก้องลงไปถึงใต้บาดาล นางผีเสื้อสมุทรได้ยินเสียงปี่ก็เกิดความหลงใหลจึงขึ้นมาบนฝั่งและลักพาตัวพระอภัยมณีไป",
+                        speaker: "นางผีเสื้อสมุทร",
+                        dialogue: "ช่างรูปงามและเป่าปี่ได้ไพเราะเหลือเกิน ข้าจะพาเจ้าไปเป็นคู่ครองในถ้ำใต้ทะเล!",
+                        svg: `<svg viewBox="0 0 480 330" class="w-full h-full">
+                            <rect width="480" height="330" fill="#3B0764"/>
+                            <rect y="220" width="480" height="110" fill="#1E1B4B"/>
+                            <g transform="translate(110, 55)">
+                                <circle cx="80" cy="60" r="45" fill="#9333EA"/>
+                                <circle cx="50" cy="40" r="25" fill="#581C87"/>
+                                <circle cx="110" cy="40" r="25" fill="#581C87"/>
+                                <circle cx="66" cy="55" r="7" fill="#FEF08A"/>
+                                <circle cx="94" cy="55" r="7" fill="#FEF08A"/>
+                                <polygon points="65,78 70,68 75,78" fill="#FFF"/>
+                                <polygon points="85,78 90,68 95,78" fill="#FFF"/>
+                                <rect x="30" y="105" width="100" height="120" rx="25" fill="#7E22CE"/>
+                            </g>
+                            <g transform="translate(240, 145)">
+                                <rect x="0" y="20" width="65" height="25" rx="10" fill="#FDBA74"/>
+                                <circle cx="72" cy="30" r="15" fill="#FDBA74"/>
+                                <polygon points="65,16 72,0 79,16" fill="#F59E0B"/>
+                            </g>
+                        </svg>`
+                    },
+                    {
+                        narration: "นางผีเสื้อสมุทรแปลงกายเป็นสาวงามปรนนิบัติพระอภัยมณีอยู่ในถ้ำ จนกระทั่งมีโอรสด้วยกันหนึ่งองค์ มีนามว่า 'สินสมุทร'",
+                        speaker: "พระอภัยมณี",
+                        dialogue: "เจ้าลูกพ่อ สินสมุทร... เจ้าช่างแข็งแรงและน่ารักยิ่งนัก",
+                        svg: `<svg viewBox="0 0 480 330" class="w-full h-full">
+                            <rect width="480" height="330" fill="#475569"/>
+                            <path d="M40 330 Q40 40 240 40 Q440 40 440 330 Z" fill="#FEF3C7"/>
+                            <g transform="translate(120, 150)">
+                                <rect x="15" y="45" width="32" height="75" rx="10" fill="#FDBA74"/>
+                                <circle cx="31" cy="26" r="18" fill="#FDBA74"/>
+                                <polygon points="21,10 31,-10 41,10" fill="#F59E0B"/>
+                            </g>
+                            <g transform="translate(215, 195)">
+                                <rect x="12" y="35" width="26" height="50" rx="8" fill="#FDBA74"/>
+                                <circle cx="25" cy="20" r="15" fill="#FDBA74"/>
+                                <circle cx="25" cy="3" r="6" fill="#1E293B"/>
+                            </g>
+                            <g transform="translate(295, 155)">
+                                <rect x="15" y="45" width="32" height="75" rx="10" fill="#A855F7"/>
+                                <circle cx="31" cy="26" r="18" fill="#FDE68A"/>
+                                <path d="M13 26 Q10 75 8 95 L54 95 Q52 75 49 26 Z" fill="#1E293B" opacity="0.3"/>
+                            </g>
+                        </svg>`
+                    },
+                    {
+                        narration: "เมื่อสินสมุทรอายุได้ 8 ขวบ ได้แอบเปิดแผ่นหินปากถ้ำออกไปเล่นน้ำทะเล และจับเงือกเฒ่ามาให้พระบิดาดู จึงได้รู้ความจริงว่าแม่เป็นยักษ์",
+                        speaker: "สินสมุทร",
+                        dialogue: "เสด็จพ่อ! ลูกจับตัวประหลาดครึ่งคนครึ่งปลามาได้ขอรับ!",
+                        svg: `<svg viewBox="0 0 480 330" class="w-full h-full">
+                            <rect width="480" height="190" fill="#7DD3FC"/>
+                            <rect y="190" width="480" height="140" fill="#0284C7"/>
+                            <g transform="translate(140, 130)">
+                                <rect x="15" y="40" width="32" height="60" rx="8" fill="#FDBA74"/>
+                                <circle cx="31" cy="22" r="18" fill="#FDBA74"/>
+                                <circle cx="31" cy="2" r="7" fill="#1E293B"/>
+                            </g>
+                            <g transform="translate(260, 165)">
+                                <circle cx="25" cy="20" r="16" fill="#FDBA74"/>
+                                <path d="M12 28 Q25 60 38 28 Z" fill="#FFFFFF"/>
+                                <path d="M15 45 Q45 75 85 55 L95 75 Q45 95 10 60 Z" fill="#14B8A6"/>
+                            </g>
+                        </svg>`
+                    }
+                ]
+            },
+            {
+                id: 3,
+                shortTitle: "ตอนที่ 3",
+                title: "หนีสู่เกาะแก้วพิสดาร",
+                scenes: [
+                    {
+                        narration: "เงือกเฒ่าและนางเงือกอาสาพาพระอภัยมณีและสินสมุทรว่ายน้ำหนีออกจากถ้ำ ระหว่างที่นางผีเสื้อสมุทรออกไปจำศีลอดอาหารบนภูเขา",
+                        speaker: "นางเงือก",
+                        dialogue: "รีบขึ้นหลังข้าเถิดพระองค์ ข้าจะพาท่านว่ายน้ำไปยังเกาะแก้วพิสดารให้เร็วที่สุด!",
+                        svg: `<svg viewBox="0 0 480 330" class="w-full h-full">
+                            <rect width="480" height="170" fill="#38BDF8"/>
+                            <rect y="170" width="480" height="160" fill="#0369A1"/>
+                            <path d="M0 210 Q60 195 120 210 T240 210 T360 210 T480 210" stroke="#BAE6FD" stroke-width="4" fill="none"/>
+                            <g transform="translate(150, 155)">
+                                <path d="M20 55 Q90 40 160 65 L180 45 L175 85 L155 70 Q90 65 20 55 Z" fill="#14B8A6"/>
+                                <circle cx="25" cy="35" r="15" fill="#FDE68A"/>
+                                <circle cx="75" cy="22" r="15" fill="#FDBA74"/>
+                                <polygon points="67,8 75,-10 83,8" fill="#F59E0B"/>
+                                <circle cx="115" cy="28" r="13" fill="#FDBA74"/>
+                            </g>
+                        </svg>`
+                    },
+                    {
+                        narration: "นางผีเสื้อสมุทรรู้ตัวจึงไล่ตามมาอย่างบ้าคลั่ง แต่เมื่อถึงเกาะแก้วพิสดาร พระฤๅษีได้เสกทรายขว้างกั้นไว้ นางยักษ์จึงเข้าเกาะไม่ได้",
+                        speaker: "พระฤๅษี",
+                        dialogue: "หยุดเดี๋ยวนี้นางยักษ์! เขตเกาะแก้วพิสดารนี้ห้ามผู้มีจิตใจโหดร้ายล่วงล้ำเข้ามา!",
+                        svg: `<svg viewBox="0 0 480 330" class="w-full h-full">
+                            <rect width="480" height="330" fill="#FEF3C7"/>
+                            <rect x="250" y="0" width="230" height="330" fill="#0369A1"/>
+                            <g transform="translate(110, 130)">
+                                <rect x="15" y="45" width="36" height="85" rx="10" fill="#EA580C"/>
+                                <circle cx="33" cy="25" r="18" fill="#FDBA74"/>
+                                <path d="M18 32 Q33 75 48 32 Z" fill="#FFF"/>
+                                <polygon points="24,8 33,-14 42,8" fill="#9A3412"/>
+                            </g>
+                            <line x1="250" y1="20" x2="250" y2="310" stroke="#FBBF24" stroke-width="10" stroke-dasharray="12 8"/>
+                            <g transform="translate(310, 110)">
+                                <circle cx="55" cy="50" r="38" fill="#9333EA"/>
+                                <circle cx="43" cy="45" r="6" fill="#FEF08A"/>
+                                <circle cx="67" cy="45" r="6" fill="#FEF08A"/>
+                                <rect x="20" y="88" width="70" height="90" rx="15" fill="#7E22CE"/>
+                            </g>
+                        </svg>`
+                    },
+                    {
+                        narration: "นางผีเสื้อสมุทรไม่ยอมแพ้และเฝ้าด่าทออยู่ที่หน้าเกาะ พระอภัยมณีจึงจำใจเป่าปี่สังหาร นางผีเสื้อสมุทรทนพิษเสียงปี่ไม่ไหวจึงขาดใจตาย",
+                        speaker: "พระอภัยมณี",
+                        dialogue: "อโหสิกรรมให้พี่ด้วยเถิด... ขอให้เจ้าไปสู่สุคติในภพภูมิที่ดี",
+                        svg: `<svg viewBox="0 0 480 330" class="w-full h-full">
+                            <rect width="480" height="330" fill="#1E293B"/>
+                            <circle cx="130" cy="165" r="60" stroke="#FBBF24" stroke-width="3" fill="none" opacity="0.8"/>
+                            <circle cx="130" cy="165" r="110" stroke="#FBBF24" stroke-width="3" fill="none" opacity="0.6"/>
+                            <circle cx="130" cy="165" r="170" stroke="#FBBF24" stroke-width="3" fill="none" opacity="0.4"/>
+                            <g transform="translate(95, 125)">
+                                <rect x="15" y="45" width="30" height="70" rx="8" fill="#FDBA74"/>
+                                <circle cx="30" cy="26" r="17" fill="#FDBA74"/>
+                                <polygon points="21,10 30,-10 39,10" fill="#F59E0B"/>
+                                <line x1="36" y1="32" x2="95" y2="45" stroke="#FDE047" stroke-width="6" stroke-linecap="round"/>
+                            </g>
+                            <path d="M290 270 Q340 160 410 270 Z" fill="#64748B"/>
+                        </svg>`
+                    }
+                ]
+            },
+            {
+                id: 4,
+                shortTitle: "ตอนที่ 4",
+                title: "กำเนิดสุดสาครและตามหาบิดา",
+                scenes: [
+                    {
+                        narration: "พระอภัยมณีและสินสมุทรได้โดยสารเรือสำเภาของท้าวสิลราชและนางสุวรรณมาลีออกจากเกาะไป ต่อมานางเงือกได้ให้กำเนิดโอรสชื่อ 'สุดสาคร'",
+                        speaker: "พระฤๅษี",
+                        dialogue: "สุดสาคร เจ้าจงเรียนวิชาอาคม จับม้านิลมังกร และถือไม้เท้าวิเศษนี้ไว้ป้องกันตัว",
+                        svg: `<svg viewBox="0 0 480 330" class="w-full h-full">
+                            <rect width="480" height="330" fill="#E0E7FF"/>
+                            <rect y="250" width="480" height="80" fill="#86EFAC"/>
+                            <g transform="translate(150, 155)">
+                                <rect x="15" y="40" width="28" height="55" rx="8" fill="#FDBA74"/>
+                                <circle cx="29" cy="22" r="16" fill="#FDBA74"/>
+                                <circle cx="29" cy="4" r="6" fill="#1E293B"/>
+                                <line x1="60" y1="10" x2="60" y2="95" stroke="#B45309" stroke-width="6"/>
+                                <circle cx="60" cy="8" r="8" fill="#38BDF8"/>
+                            </g>
+                            <g transform="translate(260, 150)">
+                                <rect x="20" y="45" width="75" height="40" rx="15" fill="#1E293B"/>
+                                <rect x="25" y="80" width="10" height="30" fill="#1E293B"/>
+                                <rect x="80" y="80" width="10" height="30" fill="#1E293B"/>
+                                <circle cx="95" cy="30" r="18" fill="#1E293B"/>
+                                <circle cx="100" cy="26" r="4" fill="#EF4444"/>
+                            </g>
+                        </svg>`
+                    },
+                    {
+                        narration: "สุดสาครขี่ม้านิลมังกรออกตามหาพระบิดา จนมาพบกับ 'ชีเปลือย' ที่หลอกลวงให้สุดสาครลงไปในเหวแล้วชิงไม้เท้าวิเศษกับม้านิลมังกรหนีไป",
+                        speaker: "ชีเปลือยเจ้าเล่ห์",
+                        dialogue: "ฮ่าๆ เจ้าเด็กน้อยหลงกลข้าเสียแล้ว! ไม้เท้าวิเศษกับม้ามังกรนี้เป็นของข้า!",
+                        svg: `<svg viewBox="0 0 480 330" class="w-full h-full">
+                            <rect width="480" height="330" fill="#FEF3C7"/>
+                            <rect x="0" y="180" width="260" height="150" fill="#78350F"/>
+                            <rect x="260" y="180" width="220" height="150" fill="#1E293B"/>
+                            <g transform="translate(140, 85)">
+                                <rect x="15" y="40" width="30" height="55" rx="8" fill="#D97706"/>
+                                <circle cx="30" cy="22" r="16" fill="#D97706"/>
+                                <line x1="60" y1="5" x2="60" y2="95" stroke="#B45309" stroke-width="6"/>
+                                <circle cx="60" cy="5" r="8" fill="#38BDF8"/>
+                            </g>
+                            <g transform="translate(330, 225)">
+                                <rect x="12" y="35" width="24" height="45" rx="6" fill="#FDBA74"/>
+                                <circle cx="24" cy="20" r="14" fill="#FDBA74"/>
+                            </g>
+                        </svg>`
+                    },
+                    {
+                        narration: "พระฤๅษีเหาะมาช่วยสุดสาครขึ้นจากเหว พร้อมสอนคติเตือนใจเรื่องความไม่ประมาท สุดสาครจึงตามไปชิงไม้เท้าคืนและเดินทางไปพบพระบิดาสำเร็จ",
+                        speaker: "พระฤๅษี",
+                        dialogue: "จำไว้เถิดหลานรัก... 'อย่าไว้ใจมนุษย์ มันแสนสุดลึกล้ำเหลือกำหนด'",
+                        svg: `<svg viewBox="0 0 480 330" class="w-full h-full">
+                            <rect width="480" height="330" fill="#FFEDD5"/>
+                            <g transform="translate(145, 120)">
+                                <rect x="15" y="45" width="38" height="90" rx="10" fill="#EA580C"/>
+                                <circle cx="34" cy="25" r="19" fill="#FDBA74"/>
+                                <path d="M18 32 Q34 80 50 32 Z" fill="#FFF"/>
+                            </g>
+                            <g transform="translate(265, 165)">
+                                <rect x="12" y="35" width="28" height="55" rx="8" fill="#FDBA74"/>
+                                <circle cx="26" cy="18" r="16" fill="#FDBA74"/>
+                                <circle cx="26" cy="0" r="6" fill="#1E293B"/>
+                            </g>
+                        </svg>`
+                    }
+                ]
+            },
+            {
+                id: 5,
+                shortTitle: "ตอนที่ 5",
+                title: "ศึกเก้าทัพและบั้นปลายชีวิต",
+                scenes: [
+                    {
+                        narration: "นางละเวงวัณฬา เจ้าเมืองลังกา ประกาศทำสงคราม 'ศึกเก้าทัพ' เพื่อแก้แค้นเมืองผลึก แต่ด้วยปัญญาของพระอภัยมณี นางสุวรรณมาลี สินสมุทร และสุดสาคร จึงคลี่คลายศึกได้",
+                        speaker: "นางสุวรรณมาลี",
+                        dialogue: "เพื่อบ้านเมืองและครอบครัวของเรา พวกเราจะร่วมแรงร่วมใจปกป้องเมืองผลึกไว้ให้ได้!",
+                        svg: `<svg viewBox="0 0 480 330" class="w-full h-full">
+                            <rect width="480" height="330" fill="#FFE4E6"/>
+                            <rect x="0" y="210" width="480" height="120" fill="#9F1239"/>
+                            <g transform="translate(150, 115)">
+                                <rect x="15" y="45" width="32" height="60" rx="8" fill="#FDE68A"/>
+                                <circle cx="31" cy="25" r="17" fill="#FDE68A"/>
+                                <polygon points="22,9 31,-12 40,9" fill="#FBBF24"/>
+                            </g>
+                            <g transform="translate(260, 115)">
+                                <rect x="15" y="45" width="32" height="60" rx="8" fill="#FDBA74"/>
+                                <circle cx="31" cy="25" r="17" fill="#FDBA74"/>
+                                <polygon points="22,9 31,-12 40,9" fill="#F59E0B"/>
+                            </g>
+                        </svg>`
+                    },
+                    {
+                        narration: "พระอภัยมณีเป่าปี่สงบศึกจนกองทัพทั้งเก้าเมืองวางอาวุธและหันมาเป็นไมตรีต่อกัน บ้านเมืองจึงกลับคืนสู่ความสงบสุขร่มเย็นอีกครั้ง",
+                        speaker: "พระอภัยมณี",
+                        dialogue: "สงครามนำมาซึ่งความสูญเสีย ขอให้เสียงดนตรีนี้เชื่อมไมตรีของทุกเมืองให้เป็นหนึ่งเดียว",
+                        svg: `<svg viewBox="0 0 480 330" class="w-full h-full">
+                            <rect width="480" height="330" fill="#FEF9C3"/>
+                            <circle cx="240" cy="140" r="95" fill="#FDE047" opacity="0.5"/>
+                            <g transform="translate(205, 110)">
+                                <rect x="15" y="45" width="36" height="85" rx="10" fill="#FDBA74"/>
+                                <circle cx="33" cy="25" r="19" fill="#FDBA74"/>
+                                <polygon points="22,8 33,-15 44,8" fill="#D97706"/>
+                                <line x1="40" y1="32" x2="110" y2="48" stroke="#B45309" stroke-width="6" stroke-linecap="round"/>
+                                <text x="115" y="25" fill="#D97706" font-size="26" font-weight="bold">♪ ♫ ♪</text>
+                            </g>
+                        </svg>`
+                    },
+                    {
+                        narration: "ในบั้นปลายชีวิต พระอภัยมณีเบื่อหน่ายทางโลก จึงสละราชสมบัติให้โอรสปกครอง และเสด็จออกบวชเป็นฤๅษีบำเพ็ญเพียรจนบรรลุธรรมอย่างสงบ",
+                        speaker: "ฤๅษีพระอภัยมณี",
+                        dialogue: "ความสุขที่แท้จริงคือความสงบแห่งจิตใจ... ปล่อยวางทางโลกเพื่อพบทางธรรม",
+                        svg: `<svg viewBox="0 0 480 330" class="w-full h-full">
+                            <rect width="480" height="330" fill="#FFEDD5"/>
+                            <circle cx="240" cy="150" r="80" fill="#FED7AA"/>
+                            <g transform="translate(205, 115)">
+                                <rect x="10" y="55" width="50" height="65" rx="15" fill="#EA580C"/>
+                                <circle cx="35" cy="30" r="20" fill="#FDBA74"/>
+                                <polygon points="24,12 35,-12 46,12" fill="#9A3412"/>
+                                <path d="M25 28 Q29 25 33 28" stroke="#1E293B" stroke-width="2" fill="none"/>
+                                <path d="M37 28 Q41 25 45 28" stroke="#1E293B" stroke-width="2" fill="none"/>
+                            </g>
+                        </svg>`
+                    }
+                ]
+            }
+        ];
+
+        let currentEpIndex = 0;
+        let currentSceneIndex = 0;
+
+        function renderEpisodeButtons() {
+            const container = document.getElementById('episode-selector');
+            if (!container) return;
+            container.innerHTML = comicEpisodes.map((ep, idx) => `
+                <button onclick="selectEpisode(${idx})" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition ${idx === currentEpIndex ? 'bg-amber-500 text-slate-950 shadow' : 'bg-slate-100 text-slate-700 hover:bg-amber-100'}">
+                    ${ep.shortTitle}
+                </button>
+            `).join('');
+        }
+
+        function selectEpisode(epIdx) {
+            currentEpIndex = epIdx;
+            currentSceneIndex = 0;
+            renderEpisodeButtons();
+            renderComicScene();
+        }
+
+        function changeScene(direction) {
+            const ep = comicEpisodes[currentEpIndex];
+            if (!ep) return;
+            const nextScene = currentSceneIndex + direction;
+
+            if (nextScene >= 0 && nextScene < ep.scenes.length) {
+                currentSceneIndex = nextScene;
+                renderComicScene();
+            } else if (nextScene >= ep.scenes.length && currentEpIndex < comicEpisodes.length - 1) {
+                selectEpisode(currentEpIndex + 1);
+            } else if (nextScene >= ep.scenes.length && currentEpIndex === comicEpisodes.length - 1) {
+                switchTab('quiz');
+            }
+        }
+
+        function renderComicScene() {
+            const ep = comicEpisodes[currentEpIndex];
+            if (!ep) return;
+            const scene = ep.scenes[currentSceneIndex];
+            if (!scene) return;
+
+            document.getElementById('comic-ep-badge').textContent = ep.shortTitle;
+            document.getElementById('comic-ep-title').textContent = ep.title;
+            document.getElementById('comic-scene-num').textContent = currentSceneIndex + 1;
+            document.getElementById('comic-scene-total').textContent = ep.scenes.length;
+
+            const progress = ((currentSceneIndex + 1) / ep.scenes.length) * 100;
+            document.getElementById('comic-progress-bar').style.width = progress + '%';
+
+            document.getElementById('comic-canvas-container').innerHTML = scene.svg;
+            document.getElementById('comic-narration').textContent = scene.narration;
+            document.getElementById('comic-speaker').textContent = scene.speaker;
+            document.getElementById('comic-dialogue').textContent = `"${scene.dialogue}"`;
+
+            const prevBtn = document.getElementById('btn-prev-scene');
+            if (prevBtn) prevBtn.disabled = (currentSceneIndex === 0);
+
+            const nextText = document.getElementById('btn-next-text');
+            if (nextText) {
+                if (currentSceneIndex < ep.scenes.length - 1) {
+                    nextText.textContent = "ฉากถัดไป";
+                } else if (currentEpIndex < comicEpisodes.length - 1) {
+                    nextText.textContent = `ไป${comicEpisodes[currentEpIndex + 1].shortTitle}`;
+                } else {
+                    nextText.textContent = "ทำแบบทดสอบเลย!";
+                }
+            }
+        }
+
+        // ข้อมูลเกมคำถาม 3 ตอน ตอนละ 10 ข้อ รวม 30 ข้อ
+        const quizSets = [
+            {
+                id: 1,
+                shortTitle: "ตอนที่ 1",
+                title: "จุดเริ่มต้นและภัยใต้สมุทร",
+                questions: [
+                    {
+                        q: "1. ผู้ประพันธ์วรรณคดีเรื่อง 'พระอภัยมณี' คือท่านใด?",
+                        options: ["สุนทรภู่ (พระสุนทรโวหาร)", "พระบาทสมเด็จพระพุทธเลิศหล้านภาลัย", "เจ้าพระยาพระคลัง (หน)", "ศรีปราชญ์"],
+                        correct: 0,
+                        explanation: "สุนทรภู่ กวีเอกของโลกเป็นผู้ประพันธ์เรื่องพระอภัยมณีด้วยคำกลอนสุภาพอันไพเราะ"
+                    },
+                    {
+                        q: "2. พระอภัยมณีและศรีสุวรรณเป็นโอรสของกษัตริย์พระองค์ใด?",
+                        options: ["ท้าวสิลราช", "ท้าวสุทัศน์", "ท้าวอุเทน", "ท้าวทศรถ"],
+                        correct: 1,
+                        explanation: "พระอภัยมณีและศรีสุวรรณเป็นพระโอรสของท้าวสุทัศน์แห่งกรุงรัตนา"
+                    },
+                    {
+                        q: "3. พระอภัยมณีเลือกเรียนวิชาใดจากอาจารย์ทิศาปาโมกข์?",
+                        options: ["วิชากระบี่กระบอง", "วิชาเป่าปี่", "วิชาธนูศิลป์", "วิชาเหาะเหินเดินอากาศ"],
+                        correct: 1,
+                        explanation: "พระอภัยมณีเลือกเรียนวิชาเป่าปี่ ส่วนศรีสุวรรณผู้น้องเลือกเรียนวิชากระบี่กระบอง"
+                    },
+                    {
+                        q: "4. เหตุใดท้าวสุทัศน์จึงขับไล่พระอภัยมณีและศรีสุวรรณออกจากเมือง?",
+                        options: ["เพราะทั้งสองแอบหนีเที่ยว", "เพราะโกรธที่เรียนวิชาเป่าปี่และกระบี่กระบองซึ่งไม่สมศักดิ์ศรีกษัตริย์", "เพราะทำสมบัติของเมืองสูญหาย", "เพราะไม่ยอมอภิเษกสมรส"],
+                        correct: 1,
+                        explanation: "ท้าวสุทัศน์เห็นว่าวิชาเป่าปี่เป็นวิชาของวณิพก ไม่ใช่วิชาสำหรับปกครองบ้านเมืองจึงทรงกริ้วและเนรเทศ"
+                    },
+                    {
+                        q: "5. ใครคือผู้ที่ลักพาตัวพระอภัยมณีไปอยู่ในถ้ำใต้ทะเล?",
+                        options: ["นางละเวงวัณฬา", "นางสุวรรณมาลี", "นางผีเสื้อสมุทร", "นางเงือก"],
+                        correct: 2,
+                        explanation: "นางผีเสื้อสมุทรหลงใหลในเสียงปี่และรูปโฉมของพระอภัยมณี จึงลักพาตัวไปอยู่ด้วยกันในถ้ำ"
+                    },
+                    {
+                        q: "6. โอรสของพระอภัยมณีที่เกิดกับนางผีเสื้อสมุทรมีชื่อว่าอะไร?",
+                        options: ["สุดสาคร", "สินสมุทร", "หัสไชย", "มังคลา"],
+                        correct: 1,
+                        explanation: "สินสมุทร เป็นโอรสของพระอภัยมณีกับนางผีเสื้อสมุทร มีพละกำลังแข็งแรงและมีเขี้ยวเล็กๆ เหมือนแม่"
+                    },
+                    {
+                        q: "7. สินสมุทรรู้ความจริงว่านางผีเสื้อสมุทรเป็นยักษ์ได้อย่างไร?",
+                        options: ["พระฤๅษีบอกความจริง", "แอบเปิดหินปากถ้ำออกไปเล่นน้ำแล้วจับเงือกเฒ่ามาให้พระบิดาดู", "ฝันเห็นเทพยดา", "นางผีเสื้อสมุทรเล่าให้ฟังเอง"],
+                        correct: 1,
+                        explanation: "สินสมุทรแอบออกไปเล่นน้ำทะเลและจับเงือกเฒ่ามาให้พระอภัยมณีดู เงือกเฒ่าจึงเล่าความจริงให้ฟัง"
+                    },
+                    {
+                        q: "8. ใครเป็นผู้ช่วยเหลือพาพระอภัยมณีและสินสมุทรว่ายน้ำหนีออกจากถ้ำ?",
+                        options: ["นางสุวรรณมาลี", "นางเงือกและเงือกเฒ่า", "ท้าวสิลราช", "ม้านิลมังกร"],
+                        correct: 1,
+                        explanation: "เงือกเฒ่าและนางเงือกอาสาพาพระอภัยมณีและสินสมุทรว่ายน้ำหนีไปยังเกาะแก้วพิสดาร"
+                    },
+                    {
+                        q: "9. พระอภัยมณีและสินสมุทรหลบหนีนางผีเสื้อสมุทรไปยังสถานที่ใด?",
+                        options: ["เมืองลังกา", "กรุงรัตนา", "เกาะแก้วพิสดาร", "เมืองผลึก"],
+                        correct: 2,
+                        explanation: "เกาะแก้วพิสดารเป็นที่พำนักของพระฤๅษีผู้ทรงศีลและมีอาคมคุ้มครอง"
+                    },
+                    {
+                        q: "10. พระอภัยมณีใช้วิธีใดในการปราบนางผีเสื้อสมุทรที่ตามมาอาละวาดหน้าเกาะ?",
+                        options: ["ใช้ดาบวิเศษฟัน", "เป่าปี่สังหารจนนางยักษ์ขาดใจตาย", "ใช้ธนูไฟยิง", "ขอให้พระฤๅษีเสกคาถาใส่"],
+                        correct: 1,
+                        explanation: "พระอภัยมณีจำใจเป่าปี่ด้วยทำนองที่เศร้าโศกและรุนแรง จนทำให้นางผีเสื้อสมุทรทนพิษเสียงปี่ไม่ไหวและสิ้นใจ"
+                    }
+                ]
+            },
+            {
+                id: 2,
+                shortTitle: "ตอนที่ 2",
+                title: "สุดสาครและการผจญภัย",
+                questions: [
+                    {
+                        q: "1. 'สุดสาคร' เป็นโอรสของพระอภัยมณีกับผู้ใด?",
+                        options: ["นางสุวรรณมาลี", "นางผีเสื้อสมุทร", "นางเงือก", "นางละเวงวัณฬา"],
+                        correct: 2,
+                        explanation: "สุดสาครเป็นโอรสของพระอภัยมณีกับนางเงือก เกิดและเติบโตบนเกาะแก้วพิสดาร"
+                    },
+                    {
+                        q: "2. ใครเป็นผู้ชุบเลี้ยงและสั่งสอนวิชาอาคมให้แก่สุดสาครบนเกาะแก้วพิสดาร?",
+                        options: ["พระฤๅษี (พระโยคี)", "อาจารย์ทิศาปาโมกข์", "ท้าวสุทัศน์", "ศรีสุวรรณ"],
+                        correct: 0,
+                        explanation: "พระฤๅษีแห่งเกาะแก้วพิสดารเป็นผู้เลี้ยงดูและสอนวิชาความรู้ให้สุดสาครตั้งแต่ยังเล็ก"
+                    },
+                    {
+                        q: "3. พาหนะคู่ใจของ 'สุดสาคร' ในการเดินทางตามหาพระบิดาคือสัตว์ชนิดใด?",
+                        options: ["ช้างเอราวัณ", "ม้านิลมังกร", "ครุฑ", "สิงโตทอง"],
+                        correct: 1,
+                        explanation: "ม้านิลมังกรเป็นสัตว์วิเศษที่มีเขี้ยวเป็นเพชร เกล็ดเป็นนิล พระฤๅษีสอนวิธีจับให้สุดสาคร"
+                    },
+                    {
+                        q: "4. อาวุธหรือสิ่งของวิเศษประจำตัวที่พระฤๅษีมอบให้สุดสาครถือติดตัวไปด้วยคืออะไร?",
+                        options: ["ปี่แก้ว", "ไม้เท้าวิเศษ", "ตรีเพชร", "แหวนวิเศษ"],
+                        correct: 1,
+                        explanation: "พระฤๅษีมอบไม้เท้าวิเศษให้สุดสาครใช้ป้องกันตัวและปราบสิ่งชั่วร้ายระหว่างเดินทาง"
+                    },
+                    {
+                        q: "5. ใครคือผู้ที่หลอกผลักสุดสาครตกเหวเพื่อชิงไม้เท้าวิเศษและม้านิลมังกร?",
+                        options: ["ชีเปลือย", "ท้าวสิลราช", "อุศเรน", "พราหมณ์โมรา"],
+                        correct: 0,
+                        explanation: "ชีเปลือยแสร้งทำเป็นนักบวชผู้ทรงศีลแล้วหลอกผลักสุดสาครลงเหวเพื่อชิงของวิเศษ"
+                    },
+                    {
+                        q: "6. เมื่อสุดสาครตกลงไปในเหว ใครเป็นผู้เหาะมาช่วยเหลือขึ้นมาจากเหว?",
+                        options: ["สินสมุทร", "พระฤๅษี", "นางเงือก", "พระอภัยมณี"],
+                        correct: 1,
+                        explanation: "พระฤๅษีเหาะมาช่วยสุดสาครขึ้นจากเหวและมอบคติสอนใจให้"
+                    },
+                    {
+                        q: "7. ข้อคิดสำคัญที่พระฤๅษีสอนสุดสาครหลังจากช่วยขึ้นจากเหวคือข้อใด?",
+                        options: ["ความพยายามอยู่ที่ไหน ความสำเร็จอยู่ที่นั่น", "อย่าไว้ใจมนุษย์ มันแสนสุดลึกล้ำเหลือกำหนด", "ทำดีได้ดี ทำชั่วได้ชั่ว", "รู้รักษาตัวรอดเป็นยอดดี"],
+                        correct: 1,
+                        explanation: "กลอนสอนใจอันโด่งดังของสุนทรภู่คือ 'แล้วสอนว่าอย่าไว้ใจมนุษย์ มันแสนสุดลึกล้ำเหลือกำหนด'"
+                    },
+                    {
+                        q: "8. สุดสาครออกเดินทางข้ามน้ำข้ามทะเลเพื่อไปตามหาผู้ใดเป็นเป้าหมายหลัก?",
+                        options: ["พระมารดา", "พระบิดา (พระอภัยมณี)", "พระอัยกา", "อาจารย์ทิศาปาโมกข์"],
+                        correct: 1,
+                        explanation: "สุดสาครออกเดินทางตามหาพระบิดาคือพระอภัยมณีด้วยความกตัญญูและมุ่งมั่น"
+                    },
+                    {
+                        q: "9. ภายหลังสุดสาครสามารถติดตามเอาสิ่งใดกลับคืนมาจากชีเปลือยได้สำเร็จ?",
+                        options: ["ปี่วิเศษและเรือสำเภา", "ไม้เท้าวิเศษและม้านิลมังกร", "มงกุฎและพระขรรค์", "แก้วมณีและผ้าสไบ"],
+                        correct: 1,
+                        explanation: "สุดสาครตามไปชิงไม้เท้าวิเศษและม้านิลมังกรกลับคืนมาได้สำเร็จ"
+                    },
+                    {
+                        q: "10. ตัวละครใดที่เป็นพี่ชายต่างมารดาของสุดสาคร?",
+                        options: ["สินสมุทร", "อุศเรน", "มังคลา", "วิเชียร"],
+                        correct: 0,
+                        explanation: "สินสมุทรเป็นโอรสของพระอภัยมณีกับนางผีเสื้อสมุทร จึงเป็นพี่ชายต่างมารดาของสุดสาคร"
+                    }
+                ]
+            },
+            {
+                id: 3,
+                shortTitle: "ตอนที่ 3",
+                title: "ศึกใหญ่และบั้นปลายชีวิต",
+                questions: [
+                    {
+                        q: "1. 'นางสุวรรณมาลี' เป็นพระธิดาของกษัตริย์พระองค์ใดแห่งเมืองผลึก?",
+                        options: ["ท้าวสุทัศน์", "ท้าวสิลราช", "ท้าวทศรถ", "ท้าวกรุงลังกา"],
+                        correct: 1,
+                        explanation: "นางสุวรรณมาลีเป็นพระธิดาของท้าวสิลราชแห่งเมืองผลึก"
+                    },
+                    {
+                        q: "2. นางสุวรรณมาลีปฏิบัติต่อสินสมุทรและสุดสาครอย่างไร?",
+                        options: ["รังเกียจและกีดกัน", "รักและดูแลเอาใจใส่ดุจลูกแท้ๆ ของตน", "ส่งไปอยู่เมืองอื่น", "ไม่ยุ่งเกี่ยวกัน"],
+                        correct: 1,
+                        explanation: "นางสุวรรณมาลีมีความเมตตาและรักใคร่สินสมุทรกับสุดสาครเหมือนบุตรของตนเอง"
+                    },
+                    {
+                        q: "3. 'นางละเวงวัณฬา' เป็นเจ้าผู้ครองบ้านเมืองใด?",
+                        options: ["เมืองผลึก", "กรุงรัตนา", "กรุงลังกา", "เมืองรมจักร"],
+                        correct: 2,
+                        explanation: "นางละเวงวัณฬาเป็นเจ้าผู้ครองกรุงลังกาและเป็นผู้นำทัพทำศึกเก้าทัพ"
+                    },
+                    {
+                        q: "4. เหตุการณ์สงครามครั้งสำคัญที่นางละเวงวัณฬายกทัพมาประชิดเมืองผลึกเรียกว่าศึกใด?",
+                        options: ["ศึกพารา", "ศึกเก้าทัพ", "ศึกกรุงลงกา", "ศึกสามก๊ก"],
+                        correct: 1,
+                        explanation: "นางละเวงวัณฬาให้เจ้าเมืองต่างๆ ยกทัพมาล้อมเมืองผลึกจนเกิดเป็น 'ศึกเก้าทัพ'"
+                    },
+                    {
+                        q: "5. ในยามเกิดสงคราม นางสุวรรณมาลีมีบทบาทโดดเด่นอย่างไร?",
+                        options: ["หนีเข้าป่าเพียงลำพัง", "มีสติปัญญาและกล้าหาญออกรบปกป้องบ้านเมืองเคียงข้างพระอภัยมณี", "ยอมแพ้ตั้งแต่แรก", "ให้คนอื่นตัดสินใจทั้งหมด"],
+                        correct: 1,
+                        explanation: "นางสุวรรณมาลีเป็นสตรีผู้กล้าหาญและเฉลียวฉลาด ช่วยคิดวางแผนและต่อสู้เพื่อบ้านเมือง"
+                    },
+                    {
+                        q: "6. พระอภัยมณีใช้สิ่งใดในการคลี่คลายสงครามและทำให้คู่ศึกวางอาวุธ?",
+                        options: ["กองทัพช้างศึก", "เสียงปี่วิเศษที่เป่ากล่อมให้เกิดความสงบและไมตรี", "อาวุธปืนใหญ่", "คำสาปแช่ง"],
+                        correct: 1,
+                        explanation: "พระอภัยมณีใช้เสียงปี่กล่อมให้เหล่าทหารและเจ้าเมืองคลายความอาฆาตแค้นและหันมาปรองดองกัน"
+                    },
+                    {
+                        q: "7. เมื่อสงครามสงบลง ความสัมพันธ์ระหว่างเมืองต่างๆ เป็นอย่างไร?",
+                        options: ["แตกแยกกันตลอดไป", "ผูกมิตรไมตรีและอยู่ร่วมกันอย่างสงบสุข", "ทำสงครามซ้ำอีกครั้ง", "ย้ายเมืองหนี"],
+                        correct: 1,
+                        explanation: "เมื่อคลี่คลายศึกได้ ทุกฝ่ายหันมาเป็นไมตรีต่อกันและบ้านเมืองกลับสู่ความสงบร่มเย็น"
+                    },
+                    {
+                        q: "8. ในบั้นปลายชีวิต พระอภัยมณีตัดสินใจทำสิ่งใด?",
+                        options: ["ทำสงครามขยายอาณาเขตต่อไป", "สละราชสมบัติให้โอรสและเสด็จออกบวชเป็นฤๅษี", "เดินทางออกทะเลไปเรื่อยๆ", "สร้างวังใหม่"],
+                        correct: 1,
+                        explanation: "พระอภัยมณีเห็นความไม่แน่นอนของทางโลก จึงสละราชสมบัติให้โอรสครองเมืองและออกบวชเป็นฤๅษี"
+                    },
+                    {
+                        q: "9. การที่พระอภัยมณีสละราชสมบัติแล้วออกบวช สะท้อนแนวคิดใดในเรื่อง?",
+                        options: ["การยึดติดในอำนาจและยศฐาบรรดาศักดิ์", "การปล่อยวางทางโลกและแสวงหาความสงบทางธรรม", "การหนีปัญหาความรับผิดชอบ", "การสะสมทรัพย์สิน"],
+                        correct: 1,
+                        explanation: "การออกบวชของพระอภัยมณีสะท้อนถึงการปล่อยวางกิเลสและความสงบสุขที่แท้จริงในทางธรรม"
+                    },
+                    {
+                        q: "10. คุณค่าสำคัญที่ผู้เรียนได้รับจากการอ่านวรรณคดีเรื่องพระอภัยมณีคือข้อใด?",
+                        options: ["ความบันเทิงเพียงอย่างเดียว", "ความไพเราะทางภาษา ข้อคิดคติสอนใจ และความเข้าใจธรรมชาติของมนุษย์", "การจดจำชื่อตัวละครให้ได้มากที่สุด", "การเลียนแบบการใช้กำลังแก้ปัญหา"],
+                        correct: 1,
+                        explanation: "พระอภัยมณีให้ทั้งความไพเราะของกลอนสุภาพ ข้อคิดเตือนใจ และมุมมองชีวิตที่ลึกซึ้ง"
+                    }
+                ]
+            }
+        ];
+
+        let currentQuizSetIndex = 0;
+        let currentQIndex = 0;
+        let score = 0;
+        let soundEnabled = true;
+        let synth = null;
+
+        function selectQuizSet(setIndex) {
+            if (setIndex < 0 || setIndex >= quizSets.length) return;
+            currentQuizSetIndex = setIndex;
+
+            for (let i = 0; i < quizSets.length; i++) {
+                const btn = document.getElementById(`quiz-set-btn-${i}`);
+                const badge = btn ? btn.querySelector('span:first-child') : null;
+                if (!btn) continue;
+
+                if (i === setIndex) {
+                    btn.className = 'p-4 rounded-2xl border-2 border-amber-500 bg-amber-50/90 transition shadow-sm text-left';
+                    if (badge) badge.className = 'text-xs font-bold px-2.5 py-0.5 rounded-full bg-amber-500 text-slate-950';
+                } else {
+                    btn.className = 'p-4 rounded-2xl border-2 border-slate-200 bg-white hover:border-amber-400 transition text-left';
+                    if (badge) badge.className = 'text-xs font-bold px-2.5 py-0.5 rounded-full bg-slate-200 text-slate-800';
+                }
+            }
+
+            const startText = document.getElementById('start-quiz-btn-text');
+            if (startText) {
+                startText.textContent = `เริ่มทำแบบทดสอบ ${quizSets[setIndex].shortTitle}`;
+            }
+        }
+
+        function backToQuizMenu() {
+            document.getElementById('quiz-play-screen').classList.add('hidden');
+            document.getElementById('quiz-result-screen').classList.add('hidden');
+            document.getElementById('quiz-start-screen').classList.remove('hidden');
+            selectQuizSet(currentQuizSetIndex);
+        }
+
+        function playSound(type) {
+            if (!soundEnabled) return;
+            try {
+                if (!synth && typeof Tone !== 'undefined') {
+                    synth = new Tone.PolySynth(Tone.Synth).toDestination();
+                }
+                if (synth && typeof Tone !== 'undefined') {
+                    if (Tone.context.state !== 'running') {
+                        Tone.start();
+                    }
+                    if (type === 'correct') {
+                        synth.triggerAttackRelease(["C5", "E5", "G5"], "8n");
+                    } else if (type === 'wrong') {
+                        synth.triggerAttackRelease(["C3", "B2"], "8n");
+                    } else if (type === 'finish') {
+                        synth.triggerAttackRelease(["C5", "E5", "G5", "C6"], "4n");
+                    }
+                }
+            } catch (e) {
+                // ข้ามอย่างปลอดภัยหากเบราว์เซอร์บล็อกเสียง
+            }
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const icon = document.getElementById('sound-icon');
+            const label = document.querySelector('#sound-toggle-btn span');
+            if (soundEnabled) {
+                icon.className = 'fa-solid fa-volume-high';
+                if (label) label.textContent = 'เสียงเปิดอยู่';
+            } else {
+                icon.className = 'fa-solid fa-volume-xmark text-rose-400';
+                if (label) label.textContent = 'ปิดเสียง';
+            }
+        }
+
+        function startQuiz() {
+            currentQIndex = 0;
+            score = 0;
+            document.getElementById('q-score').textContent = '0';
+            document.getElementById('quiz-start-screen').classList.add('hidden');
+            document.getElementById('quiz-result-screen').classList.add('hidden');
+            document.getElementById('quiz-play-screen').classList.remove('hidden');
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const activeSet = quizSets[currentQuizSetIndex];
+            const qData = activeSet.questions[currentQIndex];
+
+            document.getElementById('q-set-label').textContent = activeSet.shortTitle;
+            document.getElementById('q-current').textContent = currentQIndex + 1;
+            document.getElementById('q-total').textContent = activeSet.questions.length;
+            document.getElementById('q-question-text').textContent = qData.q;
+
+            const progress = ((currentQIndex + 1) / activeSet.questions.length) * 100;
+            document.getElementById('q-progress-bar').style.width = progress + '%';
+
+            const feedbackBox = document.getElementById('q-feedback-box');
+            feedbackBox.classList.add('hidden');
+
+            const optionsContainer = document.getElementById('q-options-container');
+            const choiceLabels = ['ก', 'ข', 'ค', 'ง'];
+
+            optionsContainer.innerHTML = qData.options.map((opt, idx) => `
+                <button onclick="checkAnswer(${idx})" id="opt-btn-${idx}" class="quiz-option w-full text-left p-4 rounded-2xl border-2 border-slate-200 bg-white flex items-center gap-3.5 font-medium text-slate-800 text-base">
+                    <span class="w-8 h-8 rounded-xl bg-slate-100 text-slate-700 font-bold flex items-center justify-center shrink-0 border border-slate-300">
+                        ${choiceLabels[idx]}
+                    </span>
+                    <span class="flex-grow">${opt}</span>
+                </button>
+            `).join('');
+        }
+
+        function checkAnswer(selectedIndex) {
+            const activeSet = quizSets[currentQuizSetIndex];
+            const qData = activeSet.questions[currentQIndex];
+            const isCorrect = (selectedIndex === qData.correct);
+
+            for (let i = 0; i < 4; i++) {
+                const btn = document.getElementById(`opt-btn-${i}`);
+                if (!btn) continue;
+                btn.disabled = true;
+                if (i === qData.correct) {
+                    btn.classList.remove('border-slate-200', 'bg-white');
+                    btn.classList.add('border-emerald-500', 'bg-emerald-50', 'text-emerald-950');
+                    btn.querySelector('span:first-child').classList.add('bg-emerald-500', 'text-white', 'border-emerald-500');
+                } else if (i === selectedIndex && !isCorrect) {
+                    btn.classList.remove('border-slate-200', 'bg-white');
+                    btn.classList.add('border-rose-500', 'bg-rose-50', 'text-rose-950');
+                    btn.querySelector('span:first-child').classList.add('bg-rose-500', 'text-white', 'border-rose-500');
+                }
+            }
+
+            const feedbackBox = document.getElementById('q-feedback-box');
+            const feedbackIcon = document.getElementById('q-feedback-icon');
+            const feedbackTitle = document.getElementById('q-feedback-title');
+            const feedbackExp = document.getElementById('q-feedback-explanation');
+
+            feedbackBox.classList.remove('hidden', 'bg-emerald-50', 'border-emerald-300', 'bg-rose-50', 'border-rose-300');
+
+            if (isCorrect) {
+                score++;
+                document.getElementById('q-score').textContent = score;
+                playSound('correct');
+                feedbackBox.classList.add('bg-emerald-50', 'border-emerald-300');
+                feedbackIcon.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600"></i>';
+                feedbackTitle.textContent = 'ถูกต้อง! ยอดเยี่ยมมาก';
+                feedbackTitle.className = 'font-bold text-base sm:text-lg text-emerald-800';
+            } else {
+                playSound('wrong');
+                feedbackBox.classList.add('bg-rose-50', 'border-rose-300');
+                feedbackIcon.innerHTML = '<i class="fa-solid fa-circle-xmark text-rose-600"></i>';
+                feedbackTitle.textContent = 'ยังไม่ถูกต้อง ลองดูคำอธิบายนะ';
+                feedbackTitle.className = 'font-bold text-base sm:text-lg text-rose-800';
+            }
+
+            feedbackExp.textContent = qData.explanation;
+
+            const nextBtnSpan = document.querySelector('#q-next-btn span');
+            if (nextBtnSpan) {
+                nextBtnSpan.textContent = (currentQIndex < activeSet.questions.length - 1) ? 'ข้อถัดไป' : 'ดูสรุปผลคะแนน';
+            }
+        }
+
+        function nextQuestion() {
+            const activeSet = quizSets[currentQuizSetIndex];
+            if (currentQIndex < activeSet.questions.length - 1) {
+                currentQIndex++;
+                renderQuestion();
+            } else {
+                showQuizResult();
+            }
+        }
+
+        function showQuizResult() {
+            const activeSet = quizSets[currentQuizSetIndex];
+            playSound('finish');
+            document.getElementById('quiz-play-screen').classList.add('hidden');
+            document.getElementById('quiz-result-screen').classList.remove('hidden');
+
+            document.getElementById('result-set-name').textContent = `${activeSet.shortTitle}: ${activeSet.title}`;
+            document.getElementById('result-final-score').textContent = score;
+
+            const rankBadge = document.getElementById('result-rank-badge');
+            const resultMsg = document.getElementById('result-message');
+            const badgeIcon = document.getElementById('result-badge-icon');
+
+            if (score >= 8) {
+                rankBadge.textContent = 'ระดับความรู้: ยอดเยี่ยม (ดีเลิศ)';
+                rankBadge.className = 'px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-800 text-sm font-bold';
+                resultMsg.textContent = 'สุดยอดมาก! คุณเข้าใจเนื้อเรื่อง ตัวละคร และข้อคิดในตอนนี้ได้อย่างครบถ้วน';
+                badgeIcon.innerHTML = '<i class="fa-solid fa-crown text-amber-500"></i>';
+            } else if (score >= 5) {
+                rankBadge.textContent = 'ระดับความรู้: ดีมาก (ผ่านเกณฑ์)';
+                rankBadge.className = 'px-4 py-1.5 rounded-full bg-sky-100 text-sky-800 text-sm font-bold';
+                resultMsg.textContent = 'ทำได้ดีมาก! คุณมีความรู้พื้นฐานในตอนนี้เป็นอย่างดี ลองทบทวนเพิ่มเติมอีกนิดจะยอดเยี่ยมยิ่งขึ้น';
+                badgeIcon.innerHTML = '<i class="fa-solid fa-medal text-sky-600"></i>';
+            } else {
+                rankBadge.textContent = 'ระดับความรู้: ควรทบทวนเนื้อหา';
+                rankBadge.className = 'px-4 py-1.5 rounded-full bg-amber-100 text-amber-800 text-sm font-bold';
+                resultMsg.textContent = 'ไม่เป็นไรนะ! ลองกลับไปอ่านสื่อการ์ตูนทั้ง 5 ตอนอีกครั้ง แล้วกลับมาท้าทายเกมคำถามใหม่ได้เลย';
+                badgeIcon.innerHTML = '<i class="fa-solid fa-book-open-reader text-amber-600"></i>';
+            }
+        }
+
+        function initProjectApp() {
+            renderCharacters();
+            renderEpisodeButtons();
+            renderComicScene();
+            selectQuizSet(0);
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initProjectApp);
+        } else {
+            initProjectApp();
+        }
+    </script>
+</body>
+</html>
